@@ -109,6 +109,24 @@ canvas.trace{width:100%;height:auto;background:#fff;border-radius:18px;touch-act
 .plus{font-family:var(--display);font-size:26px}
 .pair{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:20px;background:#fff;border-radius:12px;padding:6px 10px;box-shadow:var(--shadow)}
 .pair span{width:34px;height:34px;border-bottom:3px solid var(--terra);display:inline-flex;align-items:center;justify-content:center}
+.roomwrap{background:#fff;border-radius:18px;padding:8px;box-shadow:var(--shadow)}
+.room3d{display:grid;grid-template-columns:repeat(10,1fr);gap:1px;border-radius:12px;overflow:hidden;border:3px solid #5B4636}
+.rc{aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.rc.wall{background:var(--wall)}.rc.floor{background:var(--floor);background-image:linear-gradient(rgba(0,0,0,.08) 1px,transparent 1px);background-size:100% 50%}
+.rc svg{width:92%;height:92%}
+.rowc{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center}
+.swatch{width:26px;height:26px;border-radius:50%;padding:0;box-shadow:none;border:2px solid #5B4636}
+.board8{display:grid;grid-template-columns:repeat(8,1fr);border:4px solid #5B4636;border-radius:8px;overflow:hidden;max-width:420px;margin:0 auto;width:100%}
+.sq{aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative}
+.sq.light{background:#F0E6D2}.sq.dark{background:#B9A98F}
+.sq.sel{outline:4px solid var(--ochre);outline-offset:-4px}
+.sq.hint::after{content:"";width:30%;height:30%;border-radius:50%;background:rgba(47,143,191,.55);position:absolute}
+.sq.goal{box-shadow:inset 0 0 0 3px rgba(111,166,107,.5)}
+.pc{width:70%;height:70%;border-radius:50%;display:block;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.pc.p1{background:radial-gradient(circle at 35% 35%,#FF8A80,#C62828)}.pc.p2{background:radial-gradient(circle at 35% 35%,#8ECAE6,#1F6687)}
+.pawn{width:80%;height:80%;display:block}.pawn svg{width:100%;height:100%}
+.pawn.bk svg circle,.pawn.bk svg path{fill:#5B4636}
+.fb.small{font-size:14px;font-family:var(--body);font-weight:700;color:var(--muted)}
 .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
 .confetti i{position:absolute;top:-10px;width:10px;height:16px;border-radius:3px;animation:fall 1.6s linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
@@ -205,6 +223,9 @@ const I = {
  clock:'<svg viewBox="0 0 100 100"><rect x="30" y="6" width="40" height="88" fill="#D9603B" stroke="#5B4636" stroke-width="3"/><circle cx="50" cy="40" r="16" fill="#fff" stroke="#5B4636" stroke-width="3"/><path d="M50 40 v-10 M50 40 h7" stroke="#2B2A33" stroke-width="3" stroke-linecap="round"/><rect x="44" y="66" width="12" height="20" fill="#5B4636"/></svg>',
  sword:'<svg viewBox="0 0 100 100"><path d="M20 80 l48 -48" stroke="#C0C0C0" stroke-width="10" stroke-linecap="round"/><path d="M62 26 l12 12" stroke="#8A5A2B" stroke-width="8" stroke-linecap="round"/><path d="M58 44 l-6 -6" stroke="#F2B134" stroke-width="10" stroke-linecap="round"/><text x="30" y="40" font-size="26" font-weight="900" fill="#D9603B" font-family="Nunito">+</text><text x="66" y="84" font-size="26" font-weight="900" fill="#2F8FBF" font-family="Nunito">=</text></svg>',
  eye:'<svg viewBox="0 0 100 100"><path d="M8 50 q42 -40 84 0 q-42 40 -84 0z" fill="#fff" stroke="#5B4636" stroke-width="3"/><circle cx="50" cy="50" r="14" fill="#2F8FBF"/><circle cx="50" cy="50" r="6" fill="#2B2A33"/><circle cx="56" cy="44" r="3" fill="#fff"/></svg>',
+ sofa:'<svg viewBox="0 0 100 100"><rect x="10" y="44" width="80" height="30" rx="8" fill="#E07BA0" stroke="#5B4636" stroke-width="3"/><rect x="18" y="30" width="64" height="22" rx="8" fill="#F7A1C4" stroke="#5B4636" stroke-width="3"/><rect x="6" y="48" width="14" height="26" rx="6" fill="#E07BA0" stroke="#5B4636" stroke-width="3"/><rect x="80" y="48" width="14" height="26" rx="6" fill="#E07BA0" stroke="#5B4636" stroke-width="3"/><rect x="16" y="74" width="8" height="10" fill="#5B4636"/><rect x="76" y="74" width="8" height="10" fill="#5B4636"/></svg>',
+ checker:'<svg viewBox="0 0 100 100">' + Array.from({length:16},(_,i)=>`<rect x="${10+(i%4)*20}" y="${10+Math.floor(i/4)*20}" width="20" height="20" fill="${(i+Math.floor(i/4))%2?'#5B4636':'#F0E6D2'}"/>`).join('') + '<circle cx="20" cy="20" r="7" fill="#E63946" stroke="#2B2A33" stroke-width="2"/><circle cx="40" cy="20" r="7" fill="#E63946" stroke="#2B2A33" stroke-width="2"/><circle cx="20" cy="40" r="7" fill="#E63946" stroke="#2B2A33" stroke-width="2"/><circle cx="80" cy="80" r="7" fill="#2F8FBF" stroke="#2B2A33" stroke-width="2"/><circle cx="60" cy="80" r="7" fill="#2F8FBF" stroke="#2B2A33" stroke-width="2"/><circle cx="80" cy="60" r="7" fill="#2F8FBF" stroke="#2B2A33" stroke-width="2"/><rect x="10" y="10" width="80" height="80" fill="none" stroke="#2B2A33" stroke-width="3"/></svg>',
+ pawn:'<svg viewBox="0 0 100 100"><circle cx="50" cy="26" r="14" fill="#F0E6D2" stroke="#2B2A33" stroke-width="3"/><path d="M34 46 h32 l-6 10 h-20z" fill="#F0E6D2" stroke="#2B2A33" stroke-width="3"/><path d="M40 56 q-4 18 -12 26 h44 q-8 -8 -12 -26z" fill="#F0E6D2" stroke="#2B2A33" stroke-width="3"/><rect x="22" y="82" width="56" height="10" rx="3" fill="#2B2A33"/></svg>',
  wolf:'<svg viewBox="0 0 100 100"><ellipse cx="52" cy="50" rx="30" ry="16" fill="#9C8A7A"/><circle cx="84" cy="42" r="11" fill="#9C8A7A"/><polygon points="78,32 82,20 88,32" fill="#9C8A7A"/><rect x="30" y="62" width="7" height="22" fill="#9C8A7A"/><rect x="58" y="62" width="7" height="22" fill="#9C8A7A"/><circle cx="42" cy="74" r="7" fill="#FFD6B0"/><circle cx="58" cy="74" r="7" fill="#FFD6B0"/></svg>',
 };
 
@@ -222,6 +243,9 @@ const GAMES = [
  {id:'arena', name:'Арена счёта', sub:'быстрый счёт', icon:'sword', color:'#D9603B'},
  {id:'dict', name:'Запомни и напиши', sub:'диктант', icon:'eye', color:'#2F8FBF'},
  {id:'bonds', name:'Домики чисел', sub:'6 = 2 + 4', icon:'house', color:'#E3A72F'},
+ {id:'room', name:'Римская вилла', sub:'обставь комнату', icon:'sofa', color:'#F7A1C4'},
+ {id:'corners', name:'Уголки', sub:'с папой или компьютером', icon:'checker', color:'#1F3A5F'},
+ {id:'pawns', name:'Пешечный бой', sub:'шахматные пешки', icon:'pawn', color:'#5B4636'},
 ];
 let S = {stars:{}, total:0, lv:{}};
 try{ S = JSON.parse(localStorage.getItem('academy')||'null') || S; }catch(e){}
@@ -264,7 +288,7 @@ $('#reset').onclick=()=>{ if($('#reset').dataset.sure){ S={stars:{},total:0}; sa
 $('#back').onclick=()=>{ renderHub(); show('s-hub'); };
 
 let cur=null, round=0, ROUNDS=5;
-const ROUNDS_BY={read:6,color:1,build:1,arena:1,clock:5,dict:5,bonds:6};
+const ROUNDS_BY={read:6,color:1,build:1,arena:1,clock:5,dict:5,bonds:6,room:1,corners:1,pawns:1};
 function openGame(id){
   cur=id; round=0; ROUNDS=ROUNDS_BY[id]||5; const g=GAMES.find(x=>x.id===id);
   $('#g-title').textContent=g.name; $('#g-stars').textContent=S.stars[id]||0;
@@ -274,7 +298,7 @@ function progress(){ $('#pb').style.width=(round/ROUNDS*100)+'%'; }
 function next(){
   progress();
   if(round>=ROUNDS){ return finish(); }
-  ({read:qRead, write:qWrite, market:qMarket, roman:qRoman, ital:qItal, memo:qMemo, color:qColor, build:qBuild, clock:qClock, arena:qArena, dict:qDict, bonds:qBonds})[cur]();
+  ({read:qRead, write:qWrite, market:qMarket, roman:qRoman, ital:qItal, memo:qMemo, color:qColor, build:qBuild, clock:qClock, arena:qArena, dict:qDict, bonds:qBonds, room:qRoom, corners:qCorners, pawns:qPawns})[cur]();
 }
 function finish(){
   $('#g-body').innerHTML=`<div class="win">${I.star}<div class="big">Урок пройден!</div><div>Ты заработала звёзды. Так держать, римлянка!</div><button class="primary" id="again">Ещё раз</button><button class="ghost" id="home">К академии</button></div>`;
@@ -361,7 +385,7 @@ function qRead(){
 // ---------- 2. WRITING (trace) ----------
 const TRACE=['Р','и','м','В','а','р','я','Roma','Ciao','pizza','Варвара','gatto'];
 function qWrite(){
-  const L=lvl('write'); const pool = L===1?['Р','и','м','В','а','А','О','С']:L===2?['Roma','Ciao','pizza','gatto','Рим','кот']:['Варвара','gelato','grazie','Пиксель','fontana']; const word=pool[round%pool.length];
+  const L=lvl('write'); const pool = L===1?['а','у','а','у','ау','уа','А','У','ау','Ау!']:L===2?['ау','уа','ауа','Ау!','Рим','кот','Roma','Ciao','мама','папа']:['Варвара','ау-ау','gelato','grazie','Пиксель','fontana','аукает']; const word=pool[round%pool.length];
   body(`<div class="prompt">Обведи пальцем: <b style="font-family:var(--display);color:var(--terra)">${word}</b></div><canvas class="trace" id="cv" width="640" height="320"></canvas><div class="fb" id="fb"></div><div class="row"><button class="ghost" id="clr">Стереть</button><button class="primary" id="chk">Готово</button></div>`);
   const cv=$('#cv'), ctx=cv.getContext('2d');
   const fs = word.length>4 ? 150 : 230;
@@ -599,6 +623,96 @@ function qBonds(){
     body(`<div class="house"><div class="roof">${N}</div></div><div class="small">Один домик построен неправильно. Найди его!</div><div class="opts" style="grid-template-columns:1fr 1fr">${all.map((x,i)=>`<button data-i="${i}" style="font-size:24px">${x.p[0]} + ${x.p[1]}</button>`).join('')}</div><div class="fb" id="fb"></div>`);
     document.querySelectorAll('.opts button').forEach(b=>b.onclick=()=>{ const x=all[+b.dataset.i]; const ok=!x.ok; b.classList.add(ok?'ok':'bad'); feedback(ok, ok?`Верно: ${x.p[0]} + ${x.p[1]} = ${x.p[0]+x.p[1]}, а не ${N} ⭐`:`Этот домик правильный: ${x.p[0]} + ${x.p[1]} = ${N}`); if(ok){addStar('bonds'); round++; setTimeout(next,1100);} });
   }
+}
+
+// ---------- 13. ROOMBOX ----------
+const FURN=[['bed','Кровать','#F7A1C4','<rect x="10" y="40" width="80" height="40" rx="6" fill="#F7A1C4" stroke="#5B4636" stroke-width="3"/><rect x="14" y="30" width="28" height="18" rx="4" fill="#fff" stroke="#5B4636" stroke-width="3"/><rect x="10" y="30" width="80" height="12" rx="4" fill="#8B5A2B"/>'],
+ ['table','Стол','#C9A66B','<rect x="14" y="40" width="72" height="12" rx="3" fill="#C9A66B" stroke="#5B4636" stroke-width="3"/><rect x="20" y="52" width="8" height="30" fill="#8B5A2B"/><rect x="72" y="52" width="8" height="30" fill="#8B5A2B"/><circle cx="50" cy="34" r="8" fill="#E63946"/>'],
+ ['chair','Стул','#8B5A2B','<rect x="30" y="20" width="40" height="36" rx="6" fill="#E9C46A" stroke="#5B4636" stroke-width="3"/><rect x="26" y="54" width="48" height="10" rx="3" fill="#8B5A2B"/><rect x="30" y="64" width="6" height="22" fill="#5B4636"/><rect x="64" y="64" width="6" height="22" fill="#5B4636"/>'],
+ ['lamp','Торшер','#F2B134','<path d="M30 40 l12 -26 h16 l12 26z" fill="#F2B134" stroke="#5B4636" stroke-width="3"/><rect x="47" y="40" width="6" height="40" fill="#5B4636"/><ellipse cx="50" cy="84" rx="18" ry="5" fill="#5B4636"/>'],
+ ['plant','Пальма','#6FA66B','<rect x="38" y="60" width="24" height="26" rx="4" fill="#D9603B" stroke="#5B4636" stroke-width="3"/><path d="M50 60 q-30 -10 -30 -36 q22 4 30 30 q8 -26 30 -30 q0 26 -30 36" fill="#6FA66B" stroke="#2E7D4F" stroke-width="3"/>'],
+ ['rug','Ковёр','#D9603B','<ellipse cx="50" cy="60" rx="44" ry="20" fill="#D9603B" stroke="#8A3A62" stroke-width="3"/><ellipse cx="50" cy="60" rx="28" ry="12" fill="none" stroke="#FFD166" stroke-width="3"/>'],
+ ['window','Окно','#8ECAE6','<rect x="18" y="12" width="64" height="70" rx="4" fill="#8ECAE6" stroke="#5B4636" stroke-width="4"/><path d="M50 12v70M18 47h64" stroke="#5B4636" stroke-width="4"/><circle cx="36" cy="30" r="8" fill="#FFD166"/>'],
+ ['picture','Картина','#E9C46A','<rect x="20" y="20" width="60" height="50" fill="#E9C46A" stroke="#8B5A2B" stroke-width="6"/><path d="M26 64 l16 -20 10 12 8 -8 14 16z" fill="#6FA66B"/><circle cx="64" cy="34" r="5" fill="#F2B134"/>'],
+ ['column','Колонна','#F0E6D2','<rect x="36" y="18" width="28" height="64" fill="#F0E6D2" stroke="#5B4636" stroke-width="3"/><rect x="30" y="12" width="40" height="8" fill="#F0E6D2" stroke="#5B4636" stroke-width="3"/><rect x="30" y="80" width="40" height="8" fill="#F0E6D2" stroke="#5B4636" stroke-width="3"/><path d="M44 24v52M56 24v52" stroke="#B9A98F" stroke-width="2"/>'],
+ ['amphora','Амфора','#D9603B','<path d="M40 14 h20 v8 q14 6 14 26 q0 26 -24 34 q-24 -8 -24 -34 q0 -20 14 -26z" fill="#D9603B" stroke="#5B4636" stroke-width="3"/><path d="M38 24 q-14 4 -8 18 M62 24 q14 4 8 18" fill="none" stroke="#5B4636" stroke-width="3"/><path d="M36 50 h28" stroke="#2B2A33" stroke-width="3"/>'],
+ ['cat','Пиксель','#F4A261','<ellipse cx="46" cy="62" rx="26" ry="16" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><circle cx="68" cy="44" r="13" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><polygon points="58,36 60,22 68,32" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><polygon points="70,32 78,22 80,36" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><circle cx="64" cy="44" r="2" fill="#2B2A33"/><circle cx="74" cy="44" r="2" fill="#2B2A33"/>'],
+ ['books','Книги','#2F8FBF','<rect x="20" y="30" width="14" height="50" fill="#2F8FBF" stroke="#5B4636" stroke-width="3"/><rect x="36" y="24" width="14" height="56" fill="#E63946" stroke="#5B4636" stroke-width="3"/><rect x="52" y="34" width="14" height="46" fill="#6FA66B" stroke="#5B4636" stroke-width="3"/><rect x="66" y="28" width="14" height="52" fill="#F2B134" stroke="#5B4636" stroke-width="3"/>'],
+ ['mirror','Зеркало','#C9C0B0','<ellipse cx="50" cy="48" rx="26" ry="34" fill="#DDEFF8" stroke="#C78A00" stroke-width="6"/><path d="M38 30 q4 -10 12 -12" fill="none" stroke="#fff" stroke-width="4"/>'],
+ ['pizza','Пицца','#F4A261','<circle cx="50" cy="50" r="34" fill="#F4A261"/><circle cx="50" cy="50" r="27" fill="#E63946"/><circle cx="50" cy="50" r="23" fill="#FFD166"/><circle cx="40" cy="42" r="5" fill="#E63946"/><circle cx="58" cy="40" r="5" fill="#E63946"/><circle cx="48" cy="58" r="5" fill="#E63946"/>'],
+];
+const WALLS=['#FBE3D9','#D5EFEA','#FBEFD0','#E6DDF3','#E3F3DE','#DDEFF8']; const FLOORS=['#D9B98C','#C9A66B','#9C8A7A','#E9D28A','#F0E6D2'];
+function qRoom(){
+  const W=10,H=7; let st; try{st=JSON.parse(localStorage.getItem('room')||'null');}catch(e){} if(!st||!st.g) st={g:Array.from({length:H},()=>Array(W).fill(null)),wall:0,floor:0};
+  let cur=FURN[0][0], placed=0;
+  const svgOf=k=>{ const f=FURN.find(x=>x[0]===k); return f?'<svg viewBox="0 0 100 100">'+f[3]+'</svg>':''; };
+  body(`<div class="small">Обставь комнату римской виллы: выбери предмет и ставь его на пол или на стену. Второе нажатие — убрать.</div><div class="roomwrap"><div class="room3d" id="room"></div></div>
+    <div class="rowc"><span class="small">Стены:</span>${WALLS.map((c,i)=>`<button class="swatch" data-w="${i}" style="background:${c}"></button>`).join('')}<span class="small" style="margin-left:8px">Пол:</span>${FLOORS.map((c,i)=>`<button class="swatch" data-f="${i}" style="background:${c}"></button>`).join('')}</div>
+    <div class="bpal" id="fpal">${FURN.map(f=>`<button class="bb" data-k="${f[0]}">${svgOf(f[0])}<span>${f[1]}</span></button>`).join('')}</div>
+    <div class="row"><button class="ghost" id="rclear">Очистить</button><button class="primary" id="rsave">Сохранить</button></div><div class="fb" id="fb"></div>`);
+  const room=$('#room');
+  const draw=()=>{ room.style.setProperty('--wall',WALLS[st.wall]); room.style.setProperty('--floor',FLOORS[st.floor]); room.innerHTML=''; for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const d=document.createElement('div'); d.className='rc'+(y<3?' wall':' floor'); d.dataset.x=x; d.dataset.y=y; if(st.g[y][x]) d.innerHTML=svgOf(st.g[y][x]); room.appendChild(d);} };
+  draw();
+  room.onclick=e=>{ const c=e.target.closest('.rc'); if(!c) return; const x=+c.dataset.x,y=+c.dataset.y; if(st.g[y][x]===cur){ st.g[y][x]=null; } else { st.g[y][x]=cur; placed++; } draw(); };
+  document.querySelectorAll('#fpal .bb').forEach(b=>b.onclick=()=>{cur=b.dataset.k; document.querySelectorAll('#fpal .bb').forEach(x=>x.classList.toggle('on',x===b));});
+  document.querySelector('#fpal .bb').classList.add('on');
+  document.querySelectorAll('.swatch[data-w]').forEach(b=>b.onclick=()=>{st.wall=+b.dataset.w; draw();});
+  document.querySelectorAll('.swatch[data-f]').forEach(b=>b.onclick=()=>{st.floor=+b.dataset.f; draw();});
+  $('#rclear').onclick=()=>{ st.g=st.g.map(r=>r.map(()=>null)); draw(); };
+  $('#rsave').onclick=()=>{ try{localStorage.setItem('room',JSON.stringify(st));}catch(e){} const n=st.g.flat().filter(Boolean).length; if(placed>=12){ feedback(true,`Вилла готова: ${n} предметов ⭐`); addStar('room'); placed=0; } else feedback(true,`Сохранено. Поставь ещё ${12-placed} предметов — и будет звезда`); };
+}
+
+// ---------- 14. CORNERS (уголки) ----------
+function boardUI(title, onCell, opts){
+  body(`<div class="paid"><span id="turnlab">${title}</span><span class="small" id="modelab"></span></div><div class="board8" id="b8"></div><div class="fb" id="fb"></div><div class="row"><button class="ghost" id="vs">${opts.vs}</button><button class="ghost" id="restart">Заново</button></div>`);
+  const b=$('#b8'); for(let i=0;i<64;i++){ const d=document.createElement('div'); d.className='sq '+(((i>>3)+i)%2?'dark':'light'); d.dataset.i=i; b.appendChild(d); }
+  b.onclick=e=>{ const c=e.target.closest('.sq'); if(c) onCell(+c.dataset.i); };
+  return b;
+}
+function qCorners(){
+  const N=8; let vsAI=true, turn=1, sel=null, moves=[], over=false;
+  const start=()=>{ const g=Array(64).fill(0); for(let r=0;r<3;r++)for(let c=0;c<3;c++){ g[(7-r)*8+c]=1; g[r*8+(7-c)]=2; } return g; };
+  let g=start();
+  const home1=[...Array(9)].map((_,k)=>(7-Math.floor(k/3))*8+(k%3)), home2=[...Array(9)].map((_,k)=>Math.floor(k/3)*8+(7-k%3));
+  const target=p=>p===1?home2:home1;
+  const reach=(from)=>{ const res=new Map(); const r0=from>>3,c0=from&7; [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{ const r=r0+dr,c=c0+dc; if(r>=0&&r<8&&c>=0&&c<8&&!g[r*8+c]) res.set(r*8+c,[r*8+c]); });
+    const seen=new Set([from]); const q=[[from,[]]]; while(q.length){ const [p,path]=q.shift(); const r=p>>3,c=p&7; [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{ const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc; if(lr>=0&&lr<8&&lc>=0&&lc<8&&g[mr*8+mc]&&!g[lr*8+lc]&&!seen.has(lr*8+lc)){ seen.add(lr*8+lc); const np=[...path,lr*8+lc]; res.set(lr*8+lc,np); q.push([lr*8+lc,np]); } }); } return res; };
+  const won=p=>target(p).every(i=>g[i]===p);
+  const dist=(i,p)=>{ const r=i>>3,c=i&7; return p===1? (r)+(7-c) : (7-r)+c; };
+  const b=boardUI('Ход: красные (ты)', onCell, {vs:'Режим: против компьютера'});
+  const render=()=>{ [...b.children].forEach((d,i)=>{ d.innerHTML=g[i]?`<span class="pc p${g[i]}"></span>`:''; d.classList.toggle('sel',i===sel); d.classList.toggle('hint',moves.some(m=>m[0]===i)); d.classList.toggle('goal',target(turn).includes(i)&&!g[i]); }); $('#turnlab').textContent= over?'Игра окончена':(turn===1?'Ход: красные'+(vsAI?' (ты)':''):'Ход: синие'+(vsAI?' (компьютер)':'')); $('#modelab').textContent=vsAI?'против компьютера':'вдвоём'; };
+  function onCell(i){ if(over) return; if(vsAI&&turn===2) return;
+    if(g[i]===turn){ sel=i; moves=[...reach(i).entries()]; render(); return; }
+    const m=moves.find(x=>x[0]===i); if(sel!==null&&m){ g[i]=turn; g[sel]=0; sel=null; moves=[]; after(); } }
+  const after=()=>{ if(won(turn)){ over=true; render(); const me=turn===1; feedback(me,'Победили '+(turn===1?'красные':'синие')+'! '+(me?'⭐⭐⭐':'')); if(me) addStar('corners', vsAI?3:1); return; } turn=3-turn; render(); if(vsAI&&turn===2) setTimeout(aiMove,500); };
+  const aiMove=()=>{ let best=null,bs=-1e9; for(let i=0;i<64;i++){ if(g[i]!==2) continue; for(const [to] of reach(i)){ let sc=dist(i,2)-dist(to,2); if(home2.includes(i)) sc-=0.5; if(home1.includes(to)) sc+=3; sc+=Math.random()*0.3; if(sc>bs){bs=sc;best=[i,to];} } } if(!best){ turn=1; render(); return; } g[best[1]]=2; g[best[0]]=0; after(); };
+  $('#vs').onclick=()=>{ vsAI=!vsAI; $('#vs').textContent=vsAI?'Режим: против компьютера':'Режим: вдвоём'; render(); if(vsAI&&turn===2) setTimeout(aiMove,400); };
+  $('#restart').onclick=()=>{ g=start(); turn=1; sel=null; moves=[]; over=false; feedback(true,''); render(); };
+  feedback(true,'Переведи все 9 фишек в противоположный угол. Ходи на соседнюю клетку или прыгай через фишки (можно цепочкой).'); $('#fb').className='fb small';
+  render();
+}
+
+// ---------- 15. PAWN BATTLE ----------
+function qPawns(){
+  let vsAI=true, turn=1, sel=null, moves=[], over=false, ep=-1;
+  const start=()=>{ const g=Array(64).fill(0); for(let c=0;c<8;c++){ g[6*8+c]=1; g[1*8+c]=2; } return g; };
+  let g=start();
+  const legal=(i,p)=>{ const r=i>>3,c=i&7, d=p===1?-1:1, out=[]; const r1=r+d; if(r1<0||r1>7) return out; if(!g[r1*8+c]){ out.push([r1*8+c,'m']); const r2=r+2*d; if(((p===1&&r===6)||(p===2&&r===1))&&!g[r2*8+c]) out.push([r2*8+c,'d']); } [-1,1].forEach(dc=>{ const cc=c+dc; if(cc<0||cc>7) return; const t=r1*8+cc; if(g[t]&&g[t]!==p) out.push([t,'x']); if(ep===t&&g[r*8+cc]===3-p) out.push([t,'e']); }); return out; };
+  const allMoves=p=>{ const a=[]; for(let i=0;i<64;i++) if(g[i]===p) legal(i,p).forEach(m=>a.push([i,...m])); return a; };
+  const b=boardUI('Ход: белые (ты)', onCell, {vs:'Режим: против компьютера'});
+  const render=()=>{ [...b.children].forEach((d,i)=>{ d.innerHTML=g[i]?`<span class="pawn ${g[i]===1?'w':'bk'}">${I.pawn}</span>`:''; d.classList.toggle('sel',i===sel); d.classList.toggle('hint',moves.some(m=>m[0]===i)); }); $('#turnlab').textContent= over?'Игра окончена':(turn===1?'Ход: белые'+(vsAI?' (ты)':''):'Ход: чёрные'+(vsAI?' (компьютер)':'')); $('#modelab').textContent=vsAI?'против компьютера':'вдвоём'; };
+  const apply=(from,to,kind,p)=>{ if(kind==='e') g[(from>>3)*8+(to&7)]=0; g[to]=p; g[from]=0; ep = kind==='d' ? (from+to)/2 : -1; };
+  function onCell(i){ if(over||(vsAI&&turn===2)) return; if(g[i]===turn){ sel=i; moves=legal(i,turn); render(); return; } const m=moves.find(x=>x[0]===i); if(sel!==null&&m){ apply(sel,i,m[1],turn); sel=null; moves=[]; after(); } }
+  const after=()=>{ const p=turn; const reached = p===1 ? g.slice(0,8).includes(1) : g.slice(56).includes(2); const oppHas = g.includes(3-p); const oppMoves = allMoves(3-p).length;
+    if(reached||!oppHas||!oppMoves){ over=true; render(); const me=p===1; feedback(me, (p===1?'Белые':'Чёрные')+' победили! '+(reached?'Пешка дошла до края.':!oppHas?'У соперника не осталось пешек.':'Сопернику некуда ходить.')+(me?' ⭐⭐⭐':'')); if(me) addStar('pawns', vsAI?3:1); return; }
+    turn=3-turn; render(); if(vsAI&&turn===2) setTimeout(aiMove,500); };
+  const aiMove=()=>{ const ms=allMoves(2); if(!ms.length){ turn=1; render(); return; } const attacked=t=>{ const r=t>>3,c=t&7; return [-1,1].some(dc=>{ const cc=c+dc; return cc>=0&&cc<8&&g[(r+1)*8+cc]===1; }); };
+    const score=m=>{ const [from,to,k]=m; let s=Math.random(); if(k==='x'||k==='e') s+=5; if((to>>3)===7) s+=100; if(attacked(to)) s-=4; s+=(to>>3)*0.6; const safeNow=!attacked(from); if(safeNow&&attacked(to)) s-=2; return s; };
+    const best=ms.sort((a,c)=>score(c)-score(a))[0]; apply(best[0],best[1],best[2],2); after(); };
+  $('#vs').onclick=()=>{ vsAI=!vsAI; $('#vs').textContent=vsAI?'Режим: против компьютера':'Режим: вдвоём'; render(); if(vsAI&&turn===2) setTimeout(aiMove,400); };
+  $('#restart').onclick=()=>{ g=start(); turn=1; sel=null; moves=[]; over=false; ep=-1; feedback(true,''); render(); };
+  feedback(true,'Пешки ходят вперёд на 1 (с начала — на 2), бьют наискосок. Побеждает тот, кто первым дойдёт до края доски или съест всех.'); $('#fb').className='fb small';
+  render();
 }
 
 // ---------- confetti ----------
