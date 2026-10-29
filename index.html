@@ -109,6 +109,11 @@ canvas.trace{width:100%;height:auto;background:#fff;border-radius:18px;touch-act
 .plus{font-family:var(--display);font-size:26px}
 .pair{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:20px;background:#fff;border-radius:12px;padding:6px 10px;box-shadow:var(--shadow)}
 .pair span{width:34px;height:34px;border-bottom:3px solid var(--terra);display:inline-flex;align-items:center;justify-content:center}
+.scene{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);border:3px solid #5B4636;background:#000;touch-action:none}
+.scene svg{display:block;width:100%;height:auto}
+.scene .item.cur{filter:drop-shadow(0 0 6px #F2B134)}
+.itool{position:absolute;transform:translateX(-50%);display:flex;gap:4px;background:#fff;border-radius:12px;padding:4px;box-shadow:0 3px 0 #B9A98F}
+.itool button{width:36px;height:36px;padding:0;border-radius:9px;box-shadow:none;background:var(--marble);font-size:18px}
 .roomwrap{background:#fff;border-radius:18px;padding:8px;box-shadow:var(--shadow)}
 .room3d{display:grid;grid-template-columns:repeat(10,1fr);gap:1px;border-radius:12px;overflow:hidden;border:3px solid #5B4636}
 .rc{aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -243,7 +248,7 @@ const GAMES = [
  {id:'arena', name:'Арена счёта', sub:'быстрый счёт', icon:'sword', color:'#D9603B'},
  {id:'dict', name:'Запомни и напиши', sub:'диктант', icon:'eye', color:'#2F8FBF'},
  {id:'bonds', name:'Домики чисел', sub:'6 = 2 + 4', icon:'house', color:'#E3A72F'},
- {id:'room', name:'Римская вилла', sub:'обставь комнату', icon:'sofa', color:'#F7A1C4'},
+ {id:'room', name:'Римская вилла', sub:'румбокс в перспективе', icon:'sofa', color:'#F7A1C4'},
  {id:'corners', name:'Уголки', sub:'с папой или компьютером', icon:'checker', color:'#1F3A5F'},
  {id:'pawns', name:'Пешечный бой', sub:'шахматные пешки', icon:'pawn', color:'#5B4636'},
 ];
@@ -625,41 +630,87 @@ function qBonds(){
   }
 }
 
-// ---------- 13. ROOMBOX ----------
-const FURN=[['bed','Кровать','#F7A1C4','<rect x="10" y="40" width="80" height="40" rx="6" fill="#F7A1C4" stroke="#5B4636" stroke-width="3"/><rect x="14" y="30" width="28" height="18" rx="4" fill="#fff" stroke="#5B4636" stroke-width="3"/><rect x="10" y="30" width="80" height="12" rx="4" fill="#8B5A2B"/>'],
- ['table','Стол','#C9A66B','<rect x="14" y="40" width="72" height="12" rx="3" fill="#C9A66B" stroke="#5B4636" stroke-width="3"/><rect x="20" y="52" width="8" height="30" fill="#8B5A2B"/><rect x="72" y="52" width="8" height="30" fill="#8B5A2B"/><circle cx="50" cy="34" r="8" fill="#E63946"/>'],
- ['chair','Стул','#8B5A2B','<rect x="30" y="20" width="40" height="36" rx="6" fill="#E9C46A" stroke="#5B4636" stroke-width="3"/><rect x="26" y="54" width="48" height="10" rx="3" fill="#8B5A2B"/><rect x="30" y="64" width="6" height="22" fill="#5B4636"/><rect x="64" y="64" width="6" height="22" fill="#5B4636"/>'],
- ['lamp','Торшер','#F2B134','<path d="M30 40 l12 -26 h16 l12 26z" fill="#F2B134" stroke="#5B4636" stroke-width="3"/><rect x="47" y="40" width="6" height="40" fill="#5B4636"/><ellipse cx="50" cy="84" rx="18" ry="5" fill="#5B4636"/>'],
- ['plant','Пальма','#6FA66B','<rect x="38" y="60" width="24" height="26" rx="4" fill="#D9603B" stroke="#5B4636" stroke-width="3"/><path d="M50 60 q-30 -10 -30 -36 q22 4 30 30 q8 -26 30 -30 q0 26 -30 36" fill="#6FA66B" stroke="#2E7D4F" stroke-width="3"/>'],
- ['rug','Ковёр','#D9603B','<ellipse cx="50" cy="60" rx="44" ry="20" fill="#D9603B" stroke="#8A3A62" stroke-width="3"/><ellipse cx="50" cy="60" rx="28" ry="12" fill="none" stroke="#FFD166" stroke-width="3"/>'],
- ['window','Окно','#8ECAE6','<rect x="18" y="12" width="64" height="70" rx="4" fill="#8ECAE6" stroke="#5B4636" stroke-width="4"/><path d="M50 12v70M18 47h64" stroke="#5B4636" stroke-width="4"/><circle cx="36" cy="30" r="8" fill="#FFD166"/>'],
- ['picture','Картина','#E9C46A','<rect x="20" y="20" width="60" height="50" fill="#E9C46A" stroke="#8B5A2B" stroke-width="6"/><path d="M26 64 l16 -20 10 12 8 -8 14 16z" fill="#6FA66B"/><circle cx="64" cy="34" r="5" fill="#F2B134"/>'],
- ['column','Колонна','#F0E6D2','<rect x="36" y="18" width="28" height="64" fill="#F0E6D2" stroke="#5B4636" stroke-width="3"/><rect x="30" y="12" width="40" height="8" fill="#F0E6D2" stroke="#5B4636" stroke-width="3"/><rect x="30" y="80" width="40" height="8" fill="#F0E6D2" stroke="#5B4636" stroke-width="3"/><path d="M44 24v52M56 24v52" stroke="#B9A98F" stroke-width="2"/>'],
- ['amphora','Амфора','#D9603B','<path d="M40 14 h20 v8 q14 6 14 26 q0 26 -24 34 q-24 -8 -24 -34 q0 -20 14 -26z" fill="#D9603B" stroke="#5B4636" stroke-width="3"/><path d="M38 24 q-14 4 -8 18 M62 24 q14 4 8 18" fill="none" stroke="#5B4636" stroke-width="3"/><path d="M36 50 h28" stroke="#2B2A33" stroke-width="3"/>'],
- ['cat','Пиксель','#F4A261','<ellipse cx="46" cy="62" rx="26" ry="16" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><circle cx="68" cy="44" r="13" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><polygon points="58,36 60,22 68,32" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><polygon points="70,32 78,22 80,36" fill="#F4A261" stroke="#5B4636" stroke-width="3"/><circle cx="64" cy="44" r="2" fill="#2B2A33"/><circle cx="74" cy="44" r="2" fill="#2B2A33"/>'],
- ['books','Книги','#2F8FBF','<rect x="20" y="30" width="14" height="50" fill="#2F8FBF" stroke="#5B4636" stroke-width="3"/><rect x="36" y="24" width="14" height="56" fill="#E63946" stroke="#5B4636" stroke-width="3"/><rect x="52" y="34" width="14" height="46" fill="#6FA66B" stroke="#5B4636" stroke-width="3"/><rect x="66" y="28" width="14" height="52" fill="#F2B134" stroke="#5B4636" stroke-width="3"/>'],
- ['mirror','Зеркало','#C9C0B0','<ellipse cx="50" cy="48" rx="26" ry="34" fill="#DDEFF8" stroke="#C78A00" stroke-width="6"/><path d="M38 30 q4 -10 12 -12" fill="none" stroke="#fff" stroke-width="4"/>'],
- ['pizza','Пицца','#F4A261','<circle cx="50" cy="50" r="34" fill="#F4A261"/><circle cx="50" cy="50" r="27" fill="#E63946"/><circle cx="50" cy="50" r="23" fill="#FFD166"/><circle cx="40" cy="42" r="5" fill="#E63946"/><circle cx="58" cy="40" r="5" fill="#E63946"/><circle cx="48" cy="58" r="5" fill="#E63946"/>'],
-];
-const WALLS=['#FBE3D9','#D5EFEA','#FBEFD0','#E6DDF3','#E3F3DE','#DDEFF8']; const FLOORS=['#D9B98C','#C9A66B','#9C8A7A','#E9D28A','#F0E6D2'];
+// ---------- 13. ROOMBOX v2 — perspective villa with free placement ----------
+const RW=1000, RH=700, HZ=330; // scene size, horizon y (back wall bottom)
+const WALLS2=[['pompei','Помпейский красный','#A8362A','#7E241B'],['ochre','Охра','#E0B35A','#C08E34'],['marble','Мрамор','#EDE6DA','#CFC4B2'],['sky','Лазурь','#9CC7DF','#6FA3C2'],['olive','Олива','#9BAA7A','#75855A'],['rose','Розовый','#E7B9C2','#C78C98']];
+const FLOORS2=[['mosaic','Мозаика','#D9C7A4'],['terra','Терракота','#B86A3E'],['marbleF','Мраморные плиты','#E6DED0'],['wood','Дерево','#9A6B3F'],['check','Шахматка','#2B2A33']];
+const ITEMS2={
+ bed:['Кровать с балдахином',260,'<path d="M20 60 l0 -60 M240 60 l0 -60" stroke="#8B5A2B" stroke-width="6"/><path d="M10 0 h240 v10 h-240z" fill="#8A3A62"/><path d="M20 10 q110 40 220 0 v26 q-110 40 -220 0z" fill="#B04A7A" opacity=".85"/><rect x="14" y="110" width="232" height="60" rx="10" fill="#8B5A2B"/><rect x="24" y="96" width="212" height="40" rx="8" fill="#F7E3C1"/><rect x="28" y="90" width="60" height="26" rx="8" fill="#fff" stroke="#D9C7A4" stroke-width="2"/><rect x="100" y="118" width="136" height="22" rx="6" fill="#D9603B"/><rect x="20" y="166" width="14" height="24" fill="#5B3A1E"/><rect x="226" y="166" width="14" height="24" fill="#5B3A1E"/>'],
+ table:['Стол с фруктами',220,'<ellipse cx="110" cy="40" rx="106" ry="26" fill="#C9A66B" stroke="#8B5A2B" stroke-width="3"/><ellipse cx="110" cy="36" rx="100" ry="20" fill="#DDB97E"/><path d="M30 60 l-6 90 M190 60 l6 90 M110 66 v90" stroke="#8B5A2B" stroke-width="10" stroke-linecap="round"/><ellipse cx="110" cy="30" rx="28" ry="10" fill="#8B5A2B"/><circle cx="98" cy="22" r="8" fill="#E63946"/><circle cx="116" cy="20" r="8" fill="#F2B134"/><circle cx="108" cy="12" r="8" fill="#6FA66B"/><path d="M150 34 l6 -22 h6 l6 22z" fill="#8ECAE6" opacity=".8"/>'],
+ chair:['Кресло-курульное',120,'<path d="M14 40 q46 -16 92 0 v14 q-46 -12 -92 0z" fill="#B04A7A"/><rect x="10" y="50" width="100" height="14" rx="4" fill="#C9A66B" stroke="#8B5A2B" stroke-width="2"/><path d="M20 64 l-10 60 M100 64 l10 60 M20 64 l80 60 M100 64 l-80 60" stroke="#8B5A2B" stroke-width="7" stroke-linecap="round"/><rect x="20" y="0" width="80" height="46" rx="10" fill="#8A3A62"/><rect x="28" y="8" width="64" height="30" rx="8" fill="#B04A7A"/>'],
+ couch:['Ложе-триклиний',240,'<rect x="0" y="50" width="240" height="40" rx="14" fill="#8A3A62"/><rect x="8" y="40" width="224" height="22" rx="10" fill="#B04A7A"/><path d="M0 60 q10 -50 40 -56 h20 v56z" fill="#8A3A62"/><rect x="14" y="16" width="44" height="26" rx="8" fill="#F2B134"/><rect x="20" y="88" width="14" height="22" fill="#5B3A1E"/><rect x="206" y="88" width="14" height="22" fill="#5B3A1E"/><path d="M70 30 h150" stroke="#F2B134" stroke-width="4" stroke-dasharray="10 8"/>'],
+ lamp:['Масляная лампа',70,'<path d="M20 20 q15 -20 30 0 h10 q4 2 0 6 h-10 q-15 14 -30 0z" fill="#C78A00" stroke="#8B5A2B" stroke-width="2"/><ellipse cx="34" cy="8" rx="5" ry="10" fill="#FFD166"/><ellipse cx="34" cy="6" rx="2.5" ry="6" fill="#fff"/><rect x="30" y="26" width="8" height="70" fill="#5B4636"/><ellipse cx="34" cy="100" rx="22" ry="7" fill="#5B4636"/>'],
+ brazier:['Жаровня',100,'<ellipse cx="50" cy="40" rx="46" ry="16" fill="#5B4636"/><ellipse cx="50" cy="36" rx="38" ry="12" fill="#2B2A33"/><path d="M30 34 q6 -22 12 -4 q4 -16 12 -2 q4 -14 12 2 q4 -10 8 4" fill="#F2B134"/><path d="M36 34 q6 -14 8 -2 q4 -10 10 0 q4 -8 8 2" fill="#E63946"/><path d="M18 50 l-8 50 M82 50 l8 50 M50 54 v50" stroke="#5B4636" stroke-width="8" stroke-linecap="round"/>'],
+ column:['Колонна',70,'<rect x="10" y="0" width="50" height="14" rx="3" fill="#F0E6D2" stroke="#B9A98F" stroke-width="2"/><path d="M14 14 q20 -10 42 0" fill="#E6DED0"/><rect x="18" y="14" width="34" height="150" fill="#F0E6D2" stroke="#B9A98F" stroke-width="2"/><path d="M26 18 v142 M35 18 v142 M44 18 v142" stroke="#D9CFBF" stroke-width="3"/><rect x="10" y="164" width="50" height="16" rx="3" fill="#F0E6D2" stroke="#B9A98F" stroke-width="2"/>'],
+ amphora:['Амфора',70,'<path d="M24 10 h22 v10 q20 8 20 36 q0 40 -31 56 q-31 -16 -31 -56 q0 -28 20 -36z" fill="#C25B34" stroke="#7A3516" stroke-width="2"/><path d="M22 22 q-16 6 -8 24 M48 22 q16 6 8 24" fill="none" stroke="#7A3516" stroke-width="4"/><path d="M18 54 h34" stroke="#2B2A33" stroke-width="3"/><path d="M22 64 q13 10 26 0" fill="none" stroke="#2B2A33" stroke-width="2"/><ellipse cx="35" cy="112" rx="14" ry="4" fill="#7A3516"/>'],
+ bust:['Бюст императора',80,'<rect x="22" y="100" width="36" height="40" fill="#F0E6D2" stroke="#B9A98F" stroke-width="2"/><rect x="14" y="138" width="52" height="10" fill="#E6DED0" stroke="#B9A98F" stroke-width="2"/><path d="M10 100 q30 -14 60 0 v8 h-60z" fill="#F0E6D2" stroke="#B9A98F" stroke-width="2"/><rect x="33" y="76" width="14" height="22" fill="#F0E6D2"/><ellipse cx="40" cy="56" rx="22" ry="26" fill="#F7F1E6" stroke="#B9A98F" stroke-width="2"/><path d="M18 50 q22 -40 44 0" fill="#E6DED0"/><path d="M20 44 q8 -8 12 0 M48 44 q8 -8 12 0" fill="none" stroke="#B9A98F" stroke-width="2"/><path d="M14 46 q26 -12 52 0" fill="none" stroke="#6FA66B" stroke-width="5" stroke-linecap="round"/>'],
+ fresco:['Фреска с садом',200,'<rect x="0" y="0" width="200" height="130" fill="#F2B134" stroke="#8B5A2B" stroke-width="6"/><rect x="10" y="10" width="180" height="110" fill="#8ECAE6"/><rect x="10" y="80" width="180" height="40" fill="#6FA66B"/><circle cx="60" cy="60" r="22" fill="#2E7D4F"/><rect x="56" y="78" width="8" height="20" fill="#5B3A1E"/><circle cx="140" cy="54" r="26" fill="#3F9B62"/><rect x="136" y="76" width="8" height="22" fill="#5B3A1E"/><path d="M90 100 q10 -26 20 0" fill="#E63946"/><circle cx="160" cy="30" r="8" fill="#FFD166"/><path d="M30 110 q20 -10 40 0 M120 112 q20 -10 40 0" fill="none" stroke="#fff" stroke-width="3" opacity=".6"/>'],
+ window:['Окно с видом на Рим',180,'<rect x="0" y="0" width="180" height="150" rx="90 90 0 0" fill="#9CC7DF" stroke="#F0E6D2" stroke-width="10"/><path d="M0 110 h180" stroke="#6FA66B" stroke-width="18"/><path d="M60 110 a30 24 0 0 1 60 0z" fill="#E6DED0"/><rect x="84" y="70" width="12" height="18" fill="#E6DED0"/><path d="M20 112 l12 -30 12 30 M130 112 l10 -24 10 24" fill="#2E7D4F"/><circle cx="140" cy="40" r="14" fill="#FFD166"/><path d="M90 10 v140 M10 80 h160" stroke="#F0E6D2" stroke-width="8"/><ellipse cx="40" cy="34" rx="14" ry="6" fill="#fff" opacity=".9"/>'],
+ shelf:['Полка со свитками',140,'<rect x="0" y="0" width="140" height="110" fill="#8B5A2B"/><rect x="8" y="8" width="124" height="44" fill="#5B3A1E"/><rect x="8" y="58" width="124" height="44" fill="#5B3A1E"/>'+[14,36,58,80,102].map(x=>`<circle cx="${x+8}" cy="30" r="12" fill="#F7E3C1" stroke="#C9A66B" stroke-width="2"/><circle cx="${x+8}" cy="30" r="4" fill="#C9A66B"/>`).join('')+'<rect x="16" y="66" width="30" height="30" fill="#E63946"/><rect x="52" y="70" width="26" height="26" fill="#2F8FBF"/><path d="M90 96 q12 -34 24 0z" fill="#C25B34"/>'],
+ fountain:['Фонтанчик',120,'<ellipse cx="60" cy="110" rx="56" ry="18" fill="#E6DED0" stroke="#B9A98F" stroke-width="3"/><ellipse cx="60" cy="104" rx="46" ry="12" fill="#8ECAE6"/><rect x="52" y="60" width="16" height="44" fill="#E6DED0" stroke="#B9A98F" stroke-width="2"/><ellipse cx="60" cy="60" rx="28" ry="9" fill="#E6DED0" stroke="#B9A98F" stroke-width="2"/><ellipse cx="60" cy="56" rx="20" ry="5" fill="#8ECAE6"/><path d="M60 50 q-16 -30 -30 -4 M60 50 q16 -30 30 -4 M60 50 v-28" fill="none" stroke="#8ECAE6" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="20" r="4" fill="#fff"/>'],
+ plant:['Лавр в кадке',110,'<path d="M30 130 h50 l-6 50 h-38z" fill="#C25B34" stroke="#7A3516" stroke-width="2"/><rect x="26" y="124" width="58" height="10" rx="3" fill="#7A3516"/><rect x="52" y="70" width="6" height="56" fill="#5B3A1E"/><circle cx="55" cy="54" r="40" fill="#3F9B62"/><circle cx="36" cy="66" r="22" fill="#2E7D4F"/><circle cx="76" cy="62" r="22" fill="#4CA86A"/><circle cx="55" cy="36" r="20" fill="#5DBE7A"/><circle cx="44" cy="48" r="4" fill="#E63946"/><circle cx="70" cy="44" r="4" fill="#E63946"/>'],
+ rug:['Ковёр',240,'<path d="M20 0 h200 l20 70 h-240z" fill="#B04A7A"/><path d="M40 10 h160 l14 50 h-188z" fill="none" stroke="#F2B134" stroke-width="5"/><path d="M60 20 h120 l8 30 h-136z" fill="#8A3A62"/><circle cx="120" cy="35" r="10" fill="#F2B134"/><path d="M0 70 h240" stroke="#F2B134" stroke-width="3" stroke-dasharray="4 4"/>'],
+ chest:['Сундук',110,'<rect x="6" y="40" width="98" height="60" rx="4" fill="#8B5A2B" stroke="#5B3A1E" stroke-width="3"/><path d="M6 44 a49 24 0 0 1 98 0z" fill="#A0522D" stroke="#5B3A1E" stroke-width="3"/><rect x="6" y="40" width="98" height="8" fill="#C78A00"/><rect x="20" y="30" width="6" height="70" fill="#C78A00"/><rect x="84" y="30" width="6" height="70" fill="#C78A00"/><rect x="48" y="52" width="14" height="16" rx="2" fill="#F2B134" stroke="#5B3A1E" stroke-width="2"/>'],
+ cat:['Кот Пиксель',110,'<ellipse cx="50" cy="70" rx="40" ry="22" fill="#F4A261"/><path d="M14 66 q-18 -8 -10 -30" fill="none" stroke="#F4A261" stroke-width="10" stroke-linecap="round"/><circle cx="84" cy="44" r="20" fill="#F4A261"/><path d="M68 32 l4 -20 12 14z M88 26 l12 -14 4 20z" fill="#F4A261"/><path d="M70 32 l3 -12 8 9z M90 29 l8 -9 3 12z" fill="#F7A1C4"/><circle cx="78" cy="42" r="3" fill="#2B2A33"/><circle cx="92" cy="42" r="3" fill="#2B2A33"/><path d="M82 50 q3 4 6 0" fill="none" stroke="#2B2A33" stroke-width="2"/><path d="M60 48 h12 M60 54 h12 M98 48 h12 M98 54 h12" stroke="#2B2A33" stroke-width="1.5"/><path d="M30 60 q10 -6 20 0 M50 62 q10 -6 20 0" fill="none" stroke="#D9603B" stroke-width="3"/>'],
+ dog:['Пёс',130,'<ellipse cx="60" cy="70" rx="46" ry="22" fill="#9C8A7A"/><path d="M16 60 q-16 -14 -4 -30" fill="none" stroke="#9C8A7A" stroke-width="10" stroke-linecap="round"/><circle cx="100" cy="50" r="22" fill="#9C8A7A"/><ellipse cx="88" cy="40" rx="8" ry="16" fill="#5B4636"/><ellipse cx="116" cy="60" rx="12" ry="8" fill="#B9A98F"/><circle cx="98" cy="46" r="3" fill="#2B2A33"/><circle cx="124" cy="58" r="4" fill="#2B2A33"/><rect x="30" y="86" width="12" height="26" rx="4" fill="#9C8A7A"/><rect x="78" y="86" width="12" height="26" rx="4" fill="#9C8A7A"/><path d="M70 90 q-2 -10 8 -8" fill="#E63946"/>'],
+ mosaic:['Мозаика на стене',150,'<rect x="0" y="0" width="150" height="110" fill="#1F3A5F"/>'+Array.from({length:10},(_,r)=>Array.from({length:14},(_,c)=>`<rect x="${c*10.7+1}" y="${r*11+1}" width="9" height="9" fill="${(Math.hypot(c-6.5,r-4.5)<3?'#F2B134':(r+c)%3?'#2F8FBF':'#8ECAE6')}"/>`).join('')).join('')+'<path d="M50 60 q25 -30 50 0" fill="none" stroke="#E63946" stroke-width="6"/>'],
+ pizza:['Пицца на блюде',80,'<ellipse cx="40" cy="44" rx="40" ry="16" fill="#E6DED0"/><ellipse cx="40" cy="40" rx="32" ry="13" fill="#F4A261"/><ellipse cx="40" cy="40" rx="26" ry="10" fill="#E63946"/><ellipse cx="40" cy="40" rx="22" ry="8" fill="#FFD166"/><circle cx="30" cy="38" r="4" fill="#E63946"/><circle cx="48" cy="36" r="4" fill="#E63946"/><circle cx="40" cy="44" r="4" fill="#E63946"/>'],
+};
+function roomScene(st){
+  const [,,wA,wB]=WALLS2[st.wall], fl=FLOORS2[st.floor];
+  let g=`<defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${wA}"/><stop offset="1" stop-color="${wB}"/></linearGradient>
+  <pattern id="mos" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#D9C7A4"/><rect x="1" y="1" width="10" height="10" fill="#B9A98F"/><rect x="13" y="13" width="10" height="10" fill="#B9A98F"/><rect x="13" y="1" width="10" height="10" fill="#E6DED0"/><rect x="1" y="13" width="10" height="10" fill="#E6DED0"/></pattern>
+  <pattern id="terra" width="60" height="30" patternUnits="userSpaceOnUse"><rect width="60" height="30" fill="#B86A3E"/><rect x="1" y="1" width="58" height="28" fill="#C77A4A" stroke="#8A4A26" stroke-width="2"/></pattern>
+  <pattern id="marbleF" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#E6DED0"/><path d="M0 80 L80 0" stroke="#fff" stroke-width="1"/><rect width="80" height="80" fill="none" stroke="#B9A98F" stroke-width="2"/></pattern>
+  <pattern id="wood" width="120" height="18" patternUnits="userSpaceOnUse"><rect width="120" height="18" fill="#9A6B3F"/><rect y="16" width="120" height="2" fill="#6E4520"/><rect x="60" width="2" height="18" fill="#6E4520"/></pattern>
+  <pattern id="check" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#F0E6D2"/><rect width="30" height="30" fill="#2B2A33"/><rect x="30" y="30" width="30" height="30" fill="#2B2A33"/></pattern></defs>`;
+  // back wall
+  g+=`<rect x="150" y="0" width="700" height="${HZ}" fill="url(#wg)"/>`;
+  // side walls
+  g+=`<path d="M0 0 L150 0 L150 ${HZ} L0 ${RH}z" fill="${wB}"/><path d="M1000 0 L850 0 L850 ${HZ} L1000 ${RH}z" fill="${wB}" opacity=".85"/>`;
+  // wall decor stripes (pompeian style)
+  g+=`<rect x="150" y="${HZ-70}" width="700" height="14" fill="#2B2A33" opacity=".35"/><rect x="150" y="${HZ-56}" width="700" height="56" fill="#000" opacity=".12"/><rect x="150" y="40" width="700" height="6" fill="#fff" opacity=".25"/>`;
+  if(st.wall===0){ for(let x=190;x<850;x+=140) g+=`<rect x="${x}" y="70" width="90" height="${HZ-160}" fill="none" stroke="#F2B134" stroke-width="3" opacity=".7"/>`; }
+  if(st.wall===2){ for(let x=150;x<850;x+=100) g+=`<path d="M${x} 0 v${HZ}" stroke="#B9A98F" stroke-width="2" opacity=".5"/>`; }
+  // floor in perspective
+  g+=`<path d="M150 ${HZ} L850 ${HZ} L1000 ${RH} L0 ${RH}z" fill="url(#${fl[0]})"/>`;
+  for(let i=1;i<8;i++){ const t=i/8; const y=HZ+(RH-HZ)*t*t; const x0=150-150*t*t, x1=850+150*t*t; g+=`<path d="M${x0} ${y} L${x1} ${y}" stroke="rgba(0,0,0,.18)" stroke-width="2"/>`; }
+  for(let i=0;i<=7;i++){ const u=i/7; g+=`<path d="M${150+700*u} ${HZ} L${1000*u} ${RH}" stroke="rgba(0,0,0,.14)" stroke-width="2"/>`; }
+  // light from left
+  g+=`<path d="M150 ${HZ} L850 ${HZ} L1000 ${RH} L0 ${RH}z" fill="url(#wg)" opacity=".08"/>`;
+  return g;
+}
 function qRoom(){
-  const W=10,H=7; let st; try{st=JSON.parse(localStorage.getItem('room')||'null');}catch(e){} if(!st||!st.g) st={g:Array.from({length:H},()=>Array(W).fill(null)),wall:0,floor:0};
-  let cur=FURN[0][0], placed=0;
-  const svgOf=k=>{ const f=FURN.find(x=>x[0]===k); return f?'<svg viewBox="0 0 100 100">'+f[3]+'</svg>':''; };
-  body(`<div class="small">Обставь комнату римской виллы: выбери предмет и ставь его на пол или на стену. Второе нажатие — убрать.</div><div class="roomwrap"><div class="room3d" id="room"></div></div>
-    <div class="rowc"><span class="small">Стены:</span>${WALLS.map((c,i)=>`<button class="swatch" data-w="${i}" style="background:${c}"></button>`).join('')}<span class="small" style="margin-left:8px">Пол:</span>${FLOORS.map((c,i)=>`<button class="swatch" data-f="${i}" style="background:${c}"></button>`).join('')}</div>
-    <div class="bpal" id="fpal">${FURN.map(f=>`<button class="bb" data-k="${f[0]}">${svgOf(f[0])}<span>${f[1]}</span></button>`).join('')}</div>
+  let st; try{st=JSON.parse(localStorage.getItem('room2')||'null');}catch(e){} if(!st||!st.items) st={wall:0,floor:0,items:[{k:'window',x:500,y:170,s:1,f:1},{k:'rug',x:500,y:560,s:1,f:1},{k:'column',x:200,y:120,s:1,f:1},{k:'column',x:800,y:120,s:1,f:1}]};
+  let cur=null, placed=0, drag=null;
+  const names=Object.entries(ITEMS2);
+  body(`<div class="small">Нажми предмет внизу — он появится в комнате. Тяни пальцем, ставь куда хочешь. Нажми на предмет в комнате — появятся кнопки.</div>
+    <div class="scene" id="scene"><svg viewBox="0 0 ${RW} ${RH}" id="rsvg"></svg>
+      <div class="itool" id="itool" hidden><button data-a="flip">↔</button><button data-a="big">＋</button><button data-a="small">－</button><button data-a="front">⬆</button><button data-a="del">✕</button></div></div>
+    <div class="rowc"><span class="small">Стены:</span>${WALLS2.map((w,i)=>`<button class="swatch" data-w="${i}" title="${w[1]}" style="background:${w[2]}"></button>`).join('')}</div>
+    <div class="rowc"><span class="small">Пол:</span>${FLOORS2.map((f,i)=>`<button class="swatch" data-f="${i}" title="${f[1]}" style="background:${f[2]}"></button>`).join('')}</div>
+    <div class="bpal" id="fpal">${names.map(([k,v])=>`<button class="bb" data-k="${k}"><svg viewBox="0 0 ${v[1]} ${v[1]}" preserveAspectRatio="xMidYMid meet">${v[2]}</svg><span>${v[0]}</span></button>`).join('')}</div>
     <div class="row"><button class="ghost" id="rclear">Очистить</button><button class="primary" id="rsave">Сохранить</button></div><div class="fb" id="fb"></div>`);
-  const room=$('#room');
-  const draw=()=>{ room.style.setProperty('--wall',WALLS[st.wall]); room.style.setProperty('--floor',FLOORS[st.floor]); room.innerHTML=''; for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const d=document.createElement('div'); d.className='rc'+(y<3?' wall':' floor'); d.dataset.x=x; d.dataset.y=y; if(st.g[y][x]) d.innerHTML=svgOf(st.g[y][x]); room.appendChild(d);} };
-  draw();
-  room.onclick=e=>{ const c=e.target.closest('.rc'); if(!c) return; const x=+c.dataset.x,y=+c.dataset.y; if(st.g[y][x]===cur){ st.g[y][x]=null; } else { st.g[y][x]=cur; placed++; } draw(); };
-  document.querySelectorAll('#fpal .bb').forEach(b=>b.onclick=()=>{cur=b.dataset.k; document.querySelectorAll('#fpal .bb').forEach(x=>x.classList.toggle('on',x===b));});
-  document.querySelector('#fpal .bb').classList.add('on');
-  document.querySelectorAll('.swatch[data-w]').forEach(b=>b.onclick=()=>{st.wall=+b.dataset.w; draw();});
-  document.querySelectorAll('.swatch[data-f]').forEach(b=>b.onclick=()=>{st.floor=+b.dataset.f; draw();});
-  $('#rclear').onclick=()=>{ st.g=st.g.map(r=>r.map(()=>null)); draw(); };
-  $('#rsave').onclick=()=>{ try{localStorage.setItem('room',JSON.stringify(st));}catch(e){} const n=st.g.flat().filter(Boolean).length; if(placed>=12){ feedback(true,`Вилла готова: ${n} предметов ⭐`); addStar('room'); placed=0; } else feedback(true,`Сохранено. Поставь ещё ${12-placed} предметов — и будет звезда`); };
+  const svg=$('#rsvg'), tool=$('#itool');
+  const depth=y=> y<HZ ? 0.55+0.45*(y/HZ) : 0.75+0.9*((y-HZ)/(RH-HZ)); // scale by depth
+  const render=()=>{
+    st.items.sort((a,b)=>a.y-b.y);
+    svg.innerHTML = roomScene(st) + st.items.map((it,i)=>{ const d=ITEMS2[it.k]; const w=d[1]; const sc=depth(it.y)*it.s*0.9; return `<g class="item${i===cur?' cur':''}" data-i="${i}" transform="translate(${it.x} ${it.y}) scale(${sc*it.f} ${sc}) translate(${-w/2} ${-w*0.9})"><ellipse cx="${w/2}" cy="${w*0.92}" rx="${w*0.45}" ry="${w*0.09}" fill="rgba(0,0,0,.22)"/>${d[2]}</g>`; }).join('');
+    if(cur!==null){ const it=st.items[cur]; const r=svg.getBoundingClientRect(); tool.hidden=false; tool.style.left=(it.x/RW*r.width)+'px'; tool.style.top=(Math.max(10,it.y/RH*r.height-depth(it.y)*ITEMS2[it.k][1]*0.9*r.height/RH-40))+'px'; } else tool.hidden=true;
+  };
+  render();
+  const pt=e=>{ const r=svg.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*RW,(e.clientY-r.top)/r.height*RH]; };
+  svg.addEventListener('pointerdown',e=>{ const g=e.target.closest('.item'); if(!g){ cur=null; render(); return; } cur=+g.dataset.i; const [x,y]=pt(e); const it=st.items[cur]; drag={dx:it.x-x,dy:it.y-y,id:it}; svg.setPointerCapture(e.pointerId); render(); e.preventDefault(); });
+  svg.addEventListener('pointermove',e=>{ if(!drag) return; const [x,y]=pt(e); drag.id.x=Math.max(20,Math.min(RW-20,x+drag.dx)); drag.id.y=Math.max(40,Math.min(RH-10,y+drag.dy)); cur=st.items.indexOf(drag.id); render(); });
+  const endDrag=()=>{ drag=null; };
+  svg.addEventListener('pointerup',endDrag); svg.addEventListener('pointercancel',endDrag);
+  tool.onclick=e=>{ const b=e.target.closest('button'); if(!b||cur===null) return; const it=st.items[cur]; const a=b.dataset.a; if(a==='flip') it.f*=-1; if(a==='big') it.s=Math.min(2.2,it.s*1.15); if(a==='small') it.s=Math.max(.4,it.s/1.15); if(a==='front'){ it.y=Math.min(RH-10,it.y+30); } if(a==='del'){ st.items.splice(cur,1); cur=null; } render(); };
+  document.querySelectorAll('#fpal .bb').forEach(b=>b.onclick=()=>{ const k=b.dataset.k; const onWall=['fresco','window','mosaic','shelf'].includes(k); st.items.push({k,x:500+Math.random()*160-80,y:onWall?150+Math.random()*60:HZ+120+Math.random()*180,s:1,f:1}); placed++; cur=st.items.length-1; render(); });
+  document.querySelectorAll('.swatch[data-w]').forEach(b=>b.onclick=()=>{st.wall=+b.dataset.w; render();});
+  document.querySelectorAll('.swatch[data-f]').forEach(b=>b.onclick=()=>{st.floor=+b.dataset.f; render();});
+  $('#rclear').onclick=()=>{ if($('#rclear').dataset.s){ st.items=[]; cur=null; render(); delete $('#rclear').dataset.s; $('#rclear').textContent='Очистить'; } else { $('#rclear').dataset.s='1'; $('#rclear').textContent='Точно?'; } };
+  $('#rsave').onclick=()=>{ try{localStorage.setItem('room2',JSON.stringify(st));}catch(e){} const n=st.items.length; if(placed>=10){ feedback(true,`Вилла готова: ${n} предметов ⭐`); addStar('room'); placed=0; } else feedback(true,`Сохранено (${n} предметов). Поставь ещё ${10-placed} — и будет звезда`); };
+  $('#back').addEventListener('click',()=>{ try{localStorage.setItem('room2',JSON.stringify(st));}catch(e){} },{once:true});
 }
 
 // ---------- 14. CORNERS (уголки) ----------
@@ -677,7 +728,7 @@ function qCorners(){
   const target=p=>p===1?home2:home1;
   const reach=(from)=>{ const res=new Map(); const r0=from>>3,c0=from&7; [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{ const r=r0+dr,c=c0+dc; if(r>=0&&r<8&&c>=0&&c<8&&!g[r*8+c]) res.set(r*8+c,[r*8+c]); });
     const seen=new Set([from]); const q=[[from,[]]]; while(q.length){ const [p,path]=q.shift(); const r=p>>3,c=p&7; [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{ const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc; if(lr>=0&&lr<8&&lc>=0&&lc<8&&g[mr*8+mc]&&!g[lr*8+lc]&&!seen.has(lr*8+lc)){ seen.add(lr*8+lc); const np=[...path,lr*8+lc]; res.set(lr*8+lc,np); q.push([lr*8+lc,np]); } }); } return res; };
-  const won=p=>target(p).every(i=>g[i]===p);
+  const won=p=>{ const T=target(p); const mine=T.filter(i=>g[i]===p).length, theirs=T.filter(i=>g[i]===3-p).length; return mine>0 && mine===9-theirs; };
   const dist=(i,p)=>{ const r=i>>3,c=i&7; return p===1? (r)+(7-c) : (7-r)+c; };
   const b=boardUI('Ход: красные (ты)', onCell, {vs:'Режим: против компьютера'});
   const render=()=>{ [...b.children].forEach((d,i)=>{ d.innerHTML=g[i]?`<span class="pc p${g[i]}"></span>`:''; d.classList.toggle('sel',i===sel); d.classList.toggle('hint',moves.some(m=>m[0]===i)); d.classList.toggle('goal',target(turn).includes(i)&&!g[i]); }); $('#turnlab').textContent= over?'Игра окончена':(turn===1?'Ход: красные'+(vsAI?' (ты)':''):'Ход: синие'+(vsAI?' (компьютер)':'')); $('#modelab').textContent=vsAI?'против компьютера':'вдвоём'; };
@@ -685,10 +736,10 @@ function qCorners(){
     if(g[i]===turn){ sel=i; moves=[...reach(i).entries()]; render(); return; }
     const m=moves.find(x=>x[0]===i); if(sel!==null&&m){ g[i]=turn; g[sel]=0; sel=null; moves=[]; after(); } }
   const after=()=>{ if(won(turn)){ over=true; render(); const me=turn===1; feedback(me,'Победили '+(turn===1?'красные':'синие')+'! '+(me?'⭐⭐⭐':'')); if(me) addStar('corners', vsAI?3:1); return; } turn=3-turn; render(); if(vsAI&&turn===2) setTimeout(aiMove,500); };
-  const aiMove=()=>{ let best=null,bs=-1e9; for(let i=0;i<64;i++){ if(g[i]!==2) continue; for(const [to] of reach(i)){ let sc=dist(i,2)-dist(to,2); if(home2.includes(i)) sc-=0.5; if(home1.includes(to)) sc+=3; sc+=Math.random()*0.3; if(sc>bs){bs=sc;best=[i,to];} } } if(!best){ turn=1; render(); return; } g[best[1]]=2; g[best[0]]=0; after(); };
+  const aiMove=()=>{ let best=null,bs=-1e9; const stillHome=home2.filter(i=>g[i]===2).length; for(let i=0;i<64;i++){ if(g[i]!==2) continue; for(const [to] of reach(i)){ let sc=(dist(i,2)-dist(to,2))*1.5; if(home2.includes(i)&&!home2.includes(to)) sc+=6; if(home2.includes(to)) sc-=8; if(home1.includes(to)) sc+=4; if(home1.includes(i)&&!home1.includes(to)) sc-=20; if(stillHome>0&&!home2.includes(i)) sc-=2; sc+=Math.random()*0.4; if(sc>bs){bs=sc;best=[i,to];} } } if(!best){ feedback(false,'У компьютера нет ходов — твой ход'); turn=1; render(); return; } g[best[1]]=2; g[best[0]]=0; after(); };
   $('#vs').onclick=()=>{ vsAI=!vsAI; $('#vs').textContent=vsAI?'Режим: против компьютера':'Режим: вдвоём'; render(); if(vsAI&&turn===2) setTimeout(aiMove,400); };
   $('#restart').onclick=()=>{ g=start(); turn=1; sel=null; moves=[]; over=false; feedback(true,''); render(); };
-  feedback(true,'Переведи все 9 фишек в противоположный угол. Ходи на соседнюю клетку или прыгай через фишки (можно цепочкой).'); $('#fb').className='fb small';
+  feedback(true,'Переведи свои фишки в противоположный угол: шаг на соседнюю клетку или прыжки через фишки (цепочкой). Фишки соперника, которые так и не вышли из своего угла, засчитываются тебе.'); $('#fb').className='fb small';
   render();
 }
 
@@ -722,4 +773,4 @@ document.addEventListener('click',e=>{ if(e.target.id==='nx') next(); });
 renderHub();
 </script>
 
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script></body></html>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{}));}</script></body></html>
