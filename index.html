@@ -138,6 +138,13 @@ canvas.trace{width:100%;height:auto;background:#fff;border-radius:18px;touch-act
 .scenebox svg{width:100%;height:auto;display:block}.scenebox .r{cursor:pointer}
 .pal.big button{width:40px;height:40px;border-radius:12px}.pal .eraser{background:#fff;font-size:18px;color:#2B2A33;border:2px dashed #999}
 .pc.sm{font-size:10px;border-radius:3px}
+.dollwrap{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:6px;max-width:300px;margin:0 auto}
+.dollwrap svg{width:100%;height:auto;display:block;border-radius:12px}
+.dopts{display:flex;gap:8px;overflow-x:auto;padding:4px 2px}
+.dopt{flex:none;width:86px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;border-radius:14px;border:3px solid transparent;font-size:11px;line-height:1.1;text-align:center}
+.dopt.on{border-color:var(--terra)}.dopt svg{width:70px;height:70px;background:#FFF8EE;border-radius:8px}
+.taskbox{min-height:0;text-align:center;font-size:15px;color:var(--wine)}
+#dcats{flex-wrap:wrap}#dcats button{padding:7px 10px;font-size:13px}
 .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
 .confetti i{position:absolute;top:-10px;width:10px;height:16px;border-radius:3px;animation:fall 1.6s linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
@@ -237,6 +244,7 @@ const I = {
  sofa:'<svg viewBox="0 0 100 100"><rect x="10" y="44" width="80" height="30" rx="8" fill="#E07BA0" stroke="#5B4636" stroke-width="3"/><rect x="18" y="30" width="64" height="22" rx="8" fill="#F7A1C4" stroke="#5B4636" stroke-width="3"/><rect x="6" y="48" width="14" height="26" rx="6" fill="#E07BA0" stroke="#5B4636" stroke-width="3"/><rect x="80" y="48" width="14" height="26" rx="6" fill="#E07BA0" stroke="#5B4636" stroke-width="3"/><rect x="16" y="74" width="8" height="10" fill="#5B4636"/><rect x="76" y="74" width="8" height="10" fill="#5B4636"/></svg>',
  checker:'<svg viewBox="0 0 100 100">' + Array.from({length:16},(_,i)=>`<rect x="${10+(i%4)*20}" y="${10+Math.floor(i/4)*20}" width="20" height="20" fill="${(i+Math.floor(i/4))%2?'#5B4636':'#F0E6D2'}"/>`).join('') + '<circle cx="20" cy="20" r="7" fill="#E63946" stroke="#2B2A33" stroke-width="2"/><circle cx="40" cy="20" r="7" fill="#E63946" stroke="#2B2A33" stroke-width="2"/><circle cx="20" cy="40" r="7" fill="#E63946" stroke="#2B2A33" stroke-width="2"/><circle cx="80" cy="80" r="7" fill="#2F8FBF" stroke="#2B2A33" stroke-width="2"/><circle cx="60" cy="80" r="7" fill="#2F8FBF" stroke="#2B2A33" stroke-width="2"/><circle cx="80" cy="60" r="7" fill="#2F8FBF" stroke="#2B2A33" stroke-width="2"/><rect x="10" y="10" width="80" height="80" fill="none" stroke="#2B2A33" stroke-width="3"/></svg>',
  pawn:'<svg viewBox="0 0 100 100"><circle cx="50" cy="26" r="14" fill="#F0E6D2" stroke="#2B2A33" stroke-width="3"/><path d="M34 46 h32 l-6 10 h-20z" fill="#F0E6D2" stroke="#2B2A33" stroke-width="3"/><path d="M40 56 q-4 18 -12 26 h44 q-8 -8 -12 -26z" fill="#F0E6D2" stroke="#2B2A33" stroke-width="3"/><rect x="22" y="82" width="56" height="10" rx="3" fill="#2B2A33"/></svg>',
+ dress:'<svg viewBox="0 0 100 100"><circle cx="50" cy="16" r="10" fill="#FFD6B0" stroke="#5B4636" stroke-width="2"/><path d="M36 30 h28 l6 24 h-40z" fill="#D4789A" stroke="#5B4636" stroke-width="2"/><path d="M30 54 h40 l14 40 h-68z" fill="#FFC2D6" stroke="#5B4636" stroke-width="2"/><circle cx="44" cy="70" r="3" fill="#E63946"/><circle cx="58" cy="80" r="3" fill="#E63946"/><path d="M36 30 l-10 20 M64 30 l10 20" stroke="#FFD6B0" stroke-width="6" stroke-linecap="round"/></svg>',
  wolf:'<svg viewBox="0 0 100 100"><ellipse cx="52" cy="50" rx="30" ry="16" fill="#9C8A7A"/><circle cx="84" cy="42" r="11" fill="#9C8A7A"/><polygon points="78,32 82,20 88,32" fill="#9C8A7A"/><rect x="30" y="62" width="7" height="22" fill="#9C8A7A"/><rect x="58" y="62" width="7" height="22" fill="#9C8A7A"/><circle cx="42" cy="74" r="7" fill="#FFD6B0"/><circle cx="58" cy="74" r="7" fill="#FFD6B0"/></svg>',
 };
 
@@ -257,6 +265,7 @@ const GAMES = [
  {id:'room', name:'Римская вилла', sub:'румбокс в перспективе', icon:'sofa', color:'#F7A1C4'},
  {id:'corners', name:'Уголки', sub:'с папой или компьютером', icon:'checker', color:'#1F3A5F'},
  {id:'pawns', name:'Пешечный бой', sub:'шахматные пешки', icon:'pawn', color:'#5B4636'},
+ {id:'doll', name:'Римская модница', sub:'бумажная кукла', icon:'dress', color:'#D4789A'},
 ];
 let S = {stars:{}, total:0, lv:{}};
 try{ S = JSON.parse(localStorage.getItem('academy')||'null') || S; }catch(e){}
@@ -278,7 +287,7 @@ function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.r
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===id)); document.querySelector('.tabs').hidden = (id==='s-game'); }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{ if(b.dataset.t==='s-rew') renderRew(); if(b.dataset.t==='s-prof') renderProf(); if(b.dataset.t==='s-hub') renderHub(); show(b.dataset.t); });
 const RANKS=[[0,'Новичок'],[10,'Ученица'],[25,'Писарь'],[45,'Легионер'],[70,'Центурион'],[100,'Императрица Рима']];
-const BADGES=[['scroll','Книгочей','read',5],['pen','Каллиграф','write',5],['coins','Торговец','market',5],['helmet','Гладиатор','roman',5],['flag','Итальянка','ital',5],['map','Картограф','memo',4],['house','Строитель чисел','bonds',8],['star','Звёздочка',null,10],['wolf','Волчица',null,54]];
+const BADGES=[['scroll','Книгочей','read',5],['pen','Каллиграф','write',5],['coins','Торговец','market',5],['helmet','Гладиатор','roman',5],['flag','Итальянка','ital',5],['map','Картограф','memo',4],['house','Строитель чисел','bonds',8],['dress','Модница','doll',6],['star','Звёздочка',null,10],['wolf','Волчица',null,54]];
 function renderRew(){
   const cols=['#9C8A7A','#5B4636','#F2B134','#D9603B','#2F8FBF','#6FA66B'];
   const n=Math.min(18,Math.floor(S.total/3));
@@ -299,7 +308,7 @@ $('#reset').onclick=()=>{ if($('#reset').dataset.sure){ S={stars:{},total:0}; sa
 $('#back').onclick=()=>{ renderHub(); show('s-hub'); };
 
 let cur=null, round=0, ROUNDS=5;
-const ROUNDS_BY={read:6,color:1,build:1,arena:1,clock:5,dict:5,bonds:6,room:1,corners:1,pawns:1};
+const ROUNDS_BY={read:6,color:1,build:1,arena:1,clock:5,dict:5,bonds:6,room:1,corners:1,pawns:1,doll:1};
 function openGame(id){
   cur=id; round=0; ROUNDS=ROUNDS_BY[id]||5; const g=GAMES.find(x=>x.id===id);
   $('#g-title').textContent=g.name; $('#g-stars').textContent=S.stars[id]||0;
@@ -309,7 +318,7 @@ function progress(){ $('#pb').style.width=(round/ROUNDS*100)+'%'; }
 function next(){
   progress();
   if(round>=ROUNDS){ return finish(); }
-  ({read:qRead, write:qWrite, market:qMarket, roman:qRoman, ital:qItal, memo:qMemo, color:qColor, build:qBuild, clock:qClock, arena:qArena, dict:qDict, bonds:qBonds, room:qRoom, corners:qCorners, pawns:qPawns})[cur]();
+  ({read:qRead, write:qWrite, market:qMarket, roman:qRoman, ital:qItal, memo:qMemo, color:qColor, build:qBuild, clock:qClock, arena:qArena, dict:qDict, bonds:qBonds, room:qRoom, corners:qCorners, pawns:qPawns, doll:qDoll})[cur]();
 }
 function finish(){
   $('#g-body').innerHTML=`<div class="win">${I.star}<div class="big">Урок пройден!</div><div>Ты заработала звёзды. Так держать, римлянка!</div><button class="primary" id="again">Ещё раз</button><button class="ghost" id="home">К академии</button></div>`;
@@ -830,6 +839,112 @@ function qPawns(){
   $('#vs').onclick=()=>{ vsAI=!vsAI; $('#vs').textContent=vsAI?'Режим: против компьютера':'Режим: вдвоём'; render(); if(vsAI&&turn===2) setTimeout(aiMove,400); };
   $('#restart').onclick=()=>{ g=start(); turn=1; sel=null; moves=[]; over=false; ep=-1; feedback(true,''); render(); };
   feedback(true,'Пешки ходят вперёд на 1 (с начала — на 2), бьют наискосок. Побеждает тот, кто первым дойдёт до края доски или съест всех.'); $('#fb').className='fb small';
+  render();
+}
+
+// ---------- 16. PAPER DOLL — «Римская модница» ----------
+const DOLL_W=300, DOLL_H=600;
+const DOLL_DEFS=`<defs><linearGradient id="dSkin" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F6CBA6"/><stop offset=".5" stop-color="#FFE0C2"/><stop offset="1" stop-color="#E9B48C"/></linearGradient>
+<linearGradient id="dWhite" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E6E0D3"/><stop offset=".5" stop-color="#FFFCF6"/><stop offset="1" stop-color="#D9D2C3"/></linearGradient>
+<linearGradient id="dPurple" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6E2C4F"/><stop offset=".5" stop-color="#B04A7A"/><stop offset="1" stop-color="#6E2C4F"/></linearGradient>
+<linearGradient id="dRed" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9E3A22"/><stop offset=".5" stop-color="#E27656"/><stop offset="1" stop-color="#9E3A22"/></linearGradient>
+<linearGradient id="dBlue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1F6687"/><stop offset=".5" stop-color="#5EAFD6"/><stop offset="1" stop-color="#1F6687"/></linearGradient>
+<linearGradient id="dGreen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2E7D4F"/><stop offset=".5" stop-color="#6FBF86"/><stop offset="1" stop-color="#2E7D4F"/></linearGradient>
+<linearGradient id="dGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE38A"/><stop offset=".5" stop-color="#D9A520"/><stop offset="1" stop-color="#8A6200"/></linearGradient>
+<linearGradient id="dPink" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#D4789A"/><stop offset=".5" stop-color="#FFC2D6"/><stop offset="1" stop-color="#D4789A"/></linearGradient>
+<linearGradient id="dHairB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8B5A2B"/><stop offset="1" stop-color="#4E2E12"/></linearGradient>
+<linearGradient id="dHairY" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2D28A"/><stop offset="1" stop-color="#C9A04C"/></linearGradient>
+<linearGradient id="dHairK" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A3A3A"/><stop offset="1" stop-color="#1F1A1A"/></linearGradient>
+<linearGradient id="dHairR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0733D"/><stop offset="1" stop-color="#9A4216"/></linearGradient>
+<linearGradient id="dMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2F2F2"/><stop offset=".5" stop-color="#A9A9A9"/><stop offset="1" stop-color="#6B6B6B"/></linearGradient></defs>`;
+// base body: head at (150,90) r 44; neck; torso; arms; legs; feet at y~560
+const DOLL_BODY=`<g id="body"><path d="M118 150 q32 14 64 0 l10 10 q-42 20 -84 0z" fill="url(#dSkin)"/>
+<path d="M112 160 q-26 10 -34 60 l-10 110 q-2 14 12 12 l14 -2 q8 -2 10 -14 l14 -100 M188 160 q26 10 34 60 l10 110 q2 14 -12 12 l-14 -2 q-8 -2 -10 -14 l-14 -100" fill="url(#dSkin)"/>
+<path d="M108 162 q42 -10 84 0 l10 150 q-52 14 -104 0z" fill="url(#dSkin)"/>
+<path d="M112 300 q38 10 76 0 l6 150 q-4 10 -14 10 l-14 0 q-8 0 -10 -8 l-6 -118 l-6 118 q-2 8 -10 8 l-14 0 q-10 0 -14 -10z" fill="url(#dSkin)"/>
+<path d="M122 458 l30 0 l4 90 q-2 10 -12 10 l-14 0 q-10 0 -10 -10z M148 458 l30 0 l2 90 q0 10 -10 10 l-14 0 q-10 0 -12 -10z" fill="url(#dSkin)"/>
+<path d="M112 448 h30 M158 448 h30" stroke="#E9B48C" stroke-width="2"/>
+<circle cx="150" cy="96" r="46" fill="url(#dSkin)"/><ellipse cx="106" cy="100" rx="7" ry="10" fill="#F6CBA6"/><ellipse cx="194" cy="100" rx="7" ry="10" fill="#F6CBA6"/>
+<path d="M124 150 q26 8 52 0 v10 q-26 8 -52 0z" fill="#E9B48C"/>
+<ellipse cx="134" cy="96" rx="6" ry="7" fill="#fff"/><ellipse cx="166" cy="96" rx="6" ry="7" fill="#fff"/><circle cx="135" cy="97" r="4" fill="#2F6F8F"/><circle cx="167" cy="97" r="4" fill="#2F6F8F"/><circle cx="136" cy="95" r="1.5" fill="#fff"/><circle cx="168" cy="95" r="1.5" fill="#fff"/>
+<path d="M126 86 q8 -6 16 -2 M158 84 q8 -4 16 2" fill="none" stroke="#6E4520" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M146 108 q4 6 8 0" fill="none" stroke="#D9A08A" stroke-width="2"/><path d="M138 120 q12 10 24 0" fill="none" stroke="#C25B5B" stroke-width="3" stroke-linecap="round"/>
+<circle cx="124" cy="112" r="6" fill="#F7A1C4" opacity=".5"/><circle cx="176" cy="112" r="6" fill="#F7A1C4" opacity=".5"/></g>`;
+const DOLL_ITEMS={
+ hair:[
+  ['Косы', `<path d="M100 92 q0 -56 50 -56 q50 0 50 56 q-8 -34 -50 -32 q-42 -2 -50 32z" fill="url(#dHairB)"/><path d="M104 96 q-10 30 -6 70 q8 14 20 6 q-8 -34 2 -70z M196 96 q10 30 6 70 q-8 14 -20 6 q8 -34 -2 -70z" fill="url(#dHairB)"/><circle cx="110" cy="128" r="5" fill="#5B3A1E"/><circle cx="110" cy="146" r="5" fill="#5B3A1E"/><circle cx="190" cy="128" r="5" fill="#5B3A1E"/><circle cx="190" cy="146" r="5" fill="#5B3A1E"/><path d="M104 170 l-8 6 8 6 8 -6z M196 170 l8 6 -8 6 -8 -6z" fill="#E63946"/>`],
+  ['Римский узел', `<path d="M102 92 q0 -56 48 -56 q48 0 48 56 q-8 -32 -48 -30 q-40 -2 -48 30z" fill="url(#dHairK)"/><ellipse cx="150" cy="50" rx="30" ry="14" fill="url(#dHairK)"/><path d="M122 50 q28 -14 56 0" fill="none" stroke="url(#dGold)" stroke-width="4"/><path d="M104 96 q-6 10 -4 24 M196 96 q6 10 4 24" stroke="url(#dHairK)" stroke-width="8" stroke-linecap="round" fill="none"/>`],
+  ['Кудри', `<circle cx="150" cy="60" r="38" fill="url(#dHairY)"/><circle cx="110" cy="80" r="18" fill="url(#dHairY)"/><circle cx="190" cy="80" r="18" fill="url(#dHairY)"/><circle cx="104" cy="112" r="16" fill="url(#dHairY)"/><circle cx="196" cy="112" r="16" fill="url(#dHairY)"/><circle cx="110" cy="142" r="14" fill="url(#dHairY)"/><circle cx="190" cy="142" r="14" fill="url(#dHairY)"/><path d="M110 70 q40 -30 80 0" fill="none" stroke="#C9A04C" stroke-width="2"/>`],
+  ['Длинные', `<path d="M100 92 q0 -56 50 -56 q50 0 50 56 q-8 -34 -50 -32 q-42 -2 -50 32z" fill="url(#dHairR)"/><path d="M104 96 q-14 60 -2 130 q10 10 22 0 q-10 -60 -6 -120z M196 96 q14 60 2 130 q-10 10 -22 0 q10 -60 6 -120z" fill="url(#dHairR)"/>`],
+  ['Хвостик', `<path d="M104 92 q0 -52 46 -52 q46 0 46 52 q-8 -30 -46 -28 q-38 -2 -46 28z" fill="url(#dHairB)"/><path d="M186 60 q30 10 26 70 q-4 20 -14 24 q4 -40 -12 -70z" fill="url(#dHairB)"/><circle cx="190" cy="66" r="7" fill="#E63946"/>`],
+ ],
+ dress:[
+  ['Стола', `<path d="M104 164 q46 -12 92 0 l24 300 q-70 20 -140 0z" fill="url(#dWhite)"/><path d="M126 164 l-10 300 M174 164 l10 300" stroke="#D9D2C3" stroke-width="2"/><path d="M104 240 q46 10 92 0" fill="none" stroke="#C9A66B" stroke-width="6"/><path d="M90 464 h120" stroke="#B04A7A" stroke-width="6"/><circle cx="118" cy="170" r="5" fill="url(#dGold)"/><circle cx="182" cy="170" r="5" fill="url(#dGold)"/>`],
+  ['Пурпурная палла', `<path d="M104 164 q46 -12 92 0 l24 300 q-70 20 -140 0z" fill="url(#dWhite)"/><path d="M92 170 q58 20 116 0 l10 60 q-30 30 -40 90 l-10 -60 q-30 -10 -60 10 l-6 -60z" fill="url(#dPurple)"/><path d="M92 170 q40 90 60 200" fill="none" stroke="#F2B134" stroke-width="3"/><circle cx="150" cy="176" r="7" fill="url(#dGold)"/><path d="M88 464 h124" stroke="#6E2C4F" stroke-width="6"/>`],
+  ['Платье с цветами', `<path d="M108 164 q42 -10 84 0 l6 130 q-48 10 -96 0z" fill="url(#dPink)"/><path d="M108 290 q42 12 84 0 l30 170 q-72 20 -144 0z" fill="url(#dPink)"/>`+[0,1,2,3,4,5,6].map(i=>`<circle cx="${112+i*13}" cy="${330+(i%2)*40}" r="6" fill="#E63946"/><circle cx="${112+i*13}" cy="${330+(i%2)*40}" r="2.5" fill="#FFD166"/>`).join('')+`<path d="M108 290 q42 12 84 0" fill="none" stroke="#D4789A" stroke-width="4"/>`],
+  ['Гладиаторша', `<path d="M110 166 q40 -10 80 0 l4 100 q-44 10 -88 0z" fill="url(#dRed)"/><path d="M106 266 h88 l10 70 q-54 14 -108 0z" fill="#8B5A2B"/>`+[0,1,2,3,4,5].map(i=>`<rect x="${110+i*14}" y="270" width="10" height="64" rx="3" fill="url(#dGold)"/>`).join('')+`<path d="M110 166 h80" stroke="url(#dGold)" stroke-width="8"/><path d="M106 200 q44 20 88 0" fill="none" stroke="url(#dGold)" stroke-width="5"/><rect x="96" y="200" width="18" height="60" rx="6" fill="url(#dMetal)"/><rect x="186" y="200" width="18" height="60" rx="6" fill="url(#dMetal)"/>`],
+  ['Джинсы и футболка', `<path d="M104 164 q46 -12 92 0 l6 130 q-52 10 -104 0z" fill="url(#dGreen)"/><path d="M104 164 q-10 10 -10 40 l24 6 M196 164 q10 10 10 40 l-24 6" fill="url(#dGreen)"/><text x="150" y="240" font-size="22" font-weight="900" text-anchor="middle" fill="#fff" font-family="Nunito">ROMA</text><path d="M110 294 h80 l8 156 q-10 8 -24 2 l-14 -120 l-14 120 q-14 6 -24 -2z" fill="url(#dBlue)"/><path d="M110 294 h80" stroke="#1F3A5F" stroke-width="6"/><path d="M118 300 v40 M182 300 v40" stroke="#1F3A5F" stroke-width="2"/>`],
+  ['Плащ путешественницы', `<path d="M108 164 q42 -10 84 0 l4 120 q-46 10 -92 0z" fill="#C9A66B"/><path d="M96 170 q54 20 108 0 l30 270 q-84 30 -168 0z" fill="url(#dRed)"/><path d="M96 170 l12 270 M204 170 l-12 270" stroke="#F2B134" stroke-width="3"/><path d="M106 290 h88 l6 160 q-50 10 -100 0z" fill="#8B5A2B"/><circle cx="150" cy="180" r="8" fill="url(#dGold)"/>`],
+ ],
+ shoes:[
+  ['Сандалии', `<path d="M118 548 h38 v12 q-19 6 -38 0z M146 548 h36 v12 q-18 6 -36 0z" fill="#8B5A2B"/><path d="M126 470 l12 78 M150 470 l-12 78 M152 470 l12 78 M176 470 l-12 78" stroke="#8B5A2B" stroke-width="3" fill="none"/>`],
+  ['Кроссовки', `<path d="M116 540 h42 v22 q-21 8 -42 0z M144 540 h40 v22 q-20 8 -40 0z" fill="#fff" stroke="#2B2A33" stroke-width="2"/><path d="M116 556 h42 M144 556 h40" stroke="#E63946" stroke-width="5"/><path d="M124 544 l10 8 M126 550 l10 -8 M152 544 l10 8 M154 550 l10 -8" stroke="#2B2A33" stroke-width="2"/>`],
+  ['Золотые туфли', `<path d="M118 548 h38 v12 q-19 8 -38 0z M146 548 h36 v12 q-18 8 -36 0z" fill="url(#dGold)"/><path d="M118 548 h38 M146 548 h36" stroke="#8A6200" stroke-width="2"/>`],
+  ['Сапоги', `<path d="M118 480 h36 l4 80 q-22 8 -44 0z M146 480 h34 l6 80 q-23 8 -46 0z" fill="#5B3A1E"/><path d="M118 490 h36 M146 490 h34" stroke="#C9A66B" stroke-width="4"/>`],
+ ],
+ head:[
+  ['Ничего', ``],
+  ['Лавровый венок', `<path d="M104 70 q46 -30 92 0" fill="none" stroke="#2E7D4F" stroke-width="7" stroke-linecap="round"/>`+[0,1,2,3,4,5,6,7].map(i=>{const t=i/7, x=104+92*t, y=70-28*Math.sin(Math.PI*t); return `<ellipse cx="${x}" cy="${y}" rx="8" ry="4" fill="#6FBF86" transform="rotate(${-40+80*t} ${x} ${y})"/>`;}).join('')],
+  ['Диадема', `<path d="M110 66 q40 -24 80 0" fill="none" stroke="url(#dGold)" stroke-width="7"/><path d="M150 44 l6 14 -12 0z M130 56 l4 10 -9 1z M170 56 l-4 10 9 1z" fill="url(#dGold)"/><circle cx="150" cy="60" r="5" fill="#E63946"/><circle cx="130" cy="66" r="3" fill="#2F8FBF"/><circle cx="170" cy="66" r="3" fill="#2F8FBF"/>`],
+  ['Шлем гладиатора', `<path d="M102 90 a48 48 0 0 1 96 0 v16 h-96z" fill="url(#dMetal)"/><path d="M118 40 q32 -24 64 0 v12 q-32 -16 -64 0z" fill="#E63946"/><rect x="100" y="104" width="100" height="10" fill="#8A8A8A"/><path d="M142 106 v24 M158 106 v24" stroke="#8A8A8A" stroke-width="5"/>`],
+  ['Кепка', `<path d="M104 86 a46 40 0 0 1 92 0z" fill="url(#dBlue)"/><path d="M104 86 h92 l20 10 h-112z" fill="#1F6687"/><circle cx="150" cy="48" r="5" fill="#fff"/>`],
+  ['Цветок', `<circle cx="112" cy="70" r="12" fill="#F7A1C4"/><circle cx="112" cy="70" r="5" fill="#FFD166"/><circle cx="126" cy="60" r="8" fill="#E63946"/><circle cx="126" cy="60" r="3" fill="#FFD166"/>`],
+ ],
+ hand:[
+  ['Ничего', ``],
+  ['Джелато', `<path d="M70 300 l20 0 -10 40z" fill="#E9C46A"/><circle cx="80" cy="294" r="11" fill="#F7A1C4"/><circle cx="74" cy="282" r="10" fill="#A7D49B"/><circle cx="86" cy="282" r="10" fill="#8B5A2B"/>`],
+  ['Свиток', `<rect x="60" y="300" width="40" height="18" rx="4" fill="#F3E2C2" stroke="#C9A66B" stroke-width="2"/><circle cx="60" cy="309" r="7" fill="#C9A66B"/><circle cx="100" cy="309" r="7" fill="#C9A66B"/>`],
+  ['Кот Пиксель', `<ellipse cx="76" cy="318" rx="22" ry="12" fill="#F4A261"/><circle cx="92" cy="304" r="11" fill="#F4A261"/><path d="M84 296 l2 -10 7 8z M94 294 l7 -8 2 10z" fill="#F4A261"/><circle cx="89" cy="304" r="1.5" fill="#2B2A33"/><circle cx="96" cy="304" r="1.5" fill="#2B2A33"/><path d="M56 316 q-10 -4 -6 -16" stroke="#F4A261" stroke-width="6" stroke-linecap="round" fill="none"/>`],
+  ['Корзина с фруктами', `<path d="M56 304 h50 l-6 28 h-38z" fill="#C9A66B" stroke="#8B5A2B" stroke-width="2"/><path d="M60 304 q21 -24 42 0" fill="none" stroke="#8B5A2B" stroke-width="4"/><circle cx="68" cy="300" r="6" fill="#E63946"/><circle cx="82" cy="296" r="6" fill="#F2B134"/><circle cx="94" cy="300" r="6" fill="#6FA66B"/>`],
+  ['Зонтик', `<path d="M236 240 a34 34 0 0 1 0 0 M202 270 a34 30 0 0 1 68 0z" fill="#E63946"/><path d="M202 270 q17 -10 34 0 q17 -10 34 0" fill="none" stroke="#fff" stroke-width="3"/><path d="M236 270 v60 q0 8 -8 8" stroke="#2B2A33" stroke-width="4" fill="none" stroke-linecap="round"/>`],
+  ['Фотоаппарат', `<rect x="196" y="296" width="48" height="32" rx="6" fill="#2B2A33"/><rect x="210" y="290" width="18" height="8" rx="2" fill="#2B2A33"/><circle cx="220" cy="312" r="10" fill="#8ECAE6" stroke="#fff" stroke-width="2"/><circle cx="220" cy="312" r="5" fill="#1F3A5F"/><circle cx="238" cy="302" r="2.5" fill="#FFD166"/>`],
+ ],
+ bg:[
+  ['Белый', ``],
+  ['Колизей', `<rect width="300" height="600" fill="#CFE6F2"/><circle cx="240" cy="70" r="26" fill="#FFD166"/><path d="M0 330 q150 -70 300 0 v270 h-300z" fill="#D9C7A4"/>`+[0,1,2,3,4,5,6,7].map(i=>`<path d="M${20+i*35} 330 v-40 a14 14 0 0 1 28 0 v40z" fill="#B9A98F"/>`).join('')+`<path d="M0 420 h300" stroke="#B9A98F" stroke-width="2"/>`],
+  ['Площадь с фонтаном', `<rect width="300" height="600" fill="#F6E7D0"/><rect x="0" y="0" width="300" height="320" fill="#F2B134" opacity=".4"/>`+[0,1,2,3,4].map(i=>`<rect x="${10+i*60}" y="${120+(i%2)*20}" width="40" height="200" fill="#E0B35A"/><rect x="${20+i*60}" y="${140+(i%2)*20}" width="10" height="16" fill="#8ECAE6"/><rect x="${36+i*60}" y="${140+(i%2)*20}" width="10" height="16" fill="#8ECAE6"/>`).join('')+`<rect x="0" y="320" width="300" height="280" fill="#D9C7A4"/><ellipse cx="150" cy="360" rx="80" ry="20" fill="#8ECAE6"/><path d="M150 340 q-16 -30 -30 -4 M150 340 q16 -30 30 -4 M150 340 v-30" stroke="#8ECAE6" stroke-width="4" fill="none"/>`],
+  ['Вилла Боргезе', `<rect width="300" height="600" fill="#BFE0F0"/><circle cx="60" cy="70" r="24" fill="#FFD166"/><rect x="0" y="340" width="300" height="260" fill="#A7D49B"/><circle cx="60" cy="300" r="50" fill="#2E7D4F"/><rect x="54" y="330" width="12" height="40" fill="#5B3A1E"/><circle cx="240" cy="280" r="60" fill="#3F9B62"/><rect x="234" y="320" width="12" height="50" fill="#5B3A1E"/><ellipse cx="150" cy="430" rx="90" ry="20" fill="#8ECAE6"/>`],
+  ['Ночной Рим', `<rect width="300" height="600" fill="#1F3A5F"/>`+Array.from({length:18},(_,i)=>`<circle cx="${(i*53)%300}" cy="${(i*37)%260}" r="2" fill="#fff"/>`).join('')+`<circle cx="230" cy="70" r="22" fill="#FFF4B0"/><path d="M0 330 h300 v270 h-300z" fill="#2B2A33"/><path d="M40 330 v-120 h50 v120 M120 330 v-80 h60 v80 M210 330 v-140 h50 v140" fill="#3A3F55"/><rect x="60" y="240" width="10" height="14" fill="#FFD166"/><rect x="140" y="270" width="10" height="14" fill="#FFD166"/><rect x="230" y="220" width="10" height="14" fill="#FFD166"/>`],
+ ],
+};
+const DOLL_TASKS=[
+ {t:'Одень Варвару на праздник императора', need:{dress:[0,1],head:[1,2],shoes:[2,0]}},
+ {t:'На арену! Одень гладиаторшу', need:{dress:[3],head:[3]}},
+ {t:'Идёт дождь. Что взять в руки и что надеть на ноги?', need:{hand:[5],shoes:[3,1]}},
+ {t:'Прогулка в парке с котом и мороженым', need:{bg:[3],hand:[1,3]}},
+ {t:'Фотосессия у Колизея в кроссовках', need:{bg:[1],shoes:[1],hand:[6]}},
+];
+function qDoll(){
+  const cats=[['hair','Волосы'],['dress','Наряд'],['shoes','Обувь'],['head','На голову'],['hand','В руки'],['bg','Фон']];
+  let st; try{st=JSON.parse(localStorage.getItem('doll')||'null');}catch(e){} if(!st) st={hair:0,dress:0,shoes:0,head:0,hand:0,bg:0};
+  let cat='dress'; let task=null;
+  body(`<div class="small">Выбери вкладку и листай наряды. Задания стилиста — за звёзды.</div>
+    <div class="dollwrap"><svg viewBox="0 0 ${DOLL_W} ${DOLL_H}" id="dsvg"></svg></div>
+    <div class="modebar" id="dcats">${cats.map(([k,n])=>`<button class="ghost ${k===cat?'on':''}" data-c="${k}">${n}</button>`).join('')}</div>
+    <div class="dopts" id="dopts"></div>
+    <div class="taskbox" id="taskbox"></div>
+    <div class="row"><button class="ghost" id="dtask">Задание стилиста</button><button class="primary" id="dsave">Сохранить образ</button></div><div class="fb" id="fb"></div>`);
+  const svg=$('#dsvg');
+  const render=()=>{ const I2=DOLL_ITEMS; svg.innerHTML=DOLL_DEFS+(I2.bg[st.bg][1]||'<rect width="300" height="600" fill="#FFF8EE"/>')+`<ellipse cx="150" cy="572" rx="70" ry="10" fill="rgba(0,0,0,.18)"/>`+DOLL_BODY+I2.shoes[st.shoes][1]+I2.dress[st.dress][1]+I2.hair[st.hair][1]+I2.head[st.head][1]+I2.hand[st.hand][1];
+    document.querySelectorAll('#dcats button').forEach(b=>b.classList.toggle('on',b.dataset.c===cat));
+    $('#dopts').innerHTML=DOLL_ITEMS[cat].map((it,i)=>`<button class="dopt ${st[cat]===i?'on':''}" data-i="${i}"><svg viewBox="${cat==='bg'?'0 0 300 600':cat==='hair'||cat==='head'?'80 20 140 160':cat==='shoes'?'100 450 100 120':cat==='hand'?'40 220 220 130':'70 150 160 330'}">${DOLL_DEFS}${cat==='bg'?(it[1]||'<rect width="300" height="600" fill="#fff"/>'):(cat==='hand'||cat==='head'||cat==='shoes'||cat==='hair')?'<g opacity=".25">'+DOLL_BODY+'</g>'+it[1]:'<g opacity=".25">'+DOLL_BODY+'</g>'+it[1]}</svg><span>${it[0]}</span></button>`).join('');
+    document.querySelectorAll('.dopt').forEach(b=>b.onclick=()=>{ st[cat]=+b.dataset.i; render(); checkTask(); });
+    try{localStorage.setItem('doll',JSON.stringify(st));}catch(e){}
+  };
+  document.querySelectorAll('#dcats button').forEach(b=>b.onclick=()=>{cat=b.dataset.c; render();});
+  const checkTask=()=>{ if(!task) return; const ok=Object.entries(task.need).every(([k,v])=>v.includes(st[k])); if(ok){ feedback(true,'Образ готов — стилист одобряет! ⭐⭐'); addStar('doll',2); task=null; $('#taskbox').innerHTML=''; } };
+  $('#dtask').onclick=()=>{ task=pick(DOLL_TASKS); $('#taskbox').innerHTML=`<b>Задание:</b> ${task.t}`; feedback(true,''); };
+  $('#dsave').onclick=()=>{ try{localStorage.setItem('doll',JSON.stringify(st)); const seen=JSON.parse(localStorage.getItem('dollSeen')||'[]'); const key=Object.values(st).join('-'); if(!seen.includes(key)){ seen.push(key); localStorage.setItem('dollSeen',JSON.stringify(seen)); feedback(true,`Образ №${seen.length} сохранён ⭐`); addStar('doll'); } else feedback(true,'Этот образ уже сохранён — придумай новый'); }catch(e){ feedback(true,'Сохранено'); } };
   render();
 }
 
